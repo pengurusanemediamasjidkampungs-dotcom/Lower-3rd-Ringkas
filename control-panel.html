@@ -6,118 +6,9 @@
     <link rel="stylesheet" href="common/css/style-control_panel.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        /* CSS Tambahan untuk UI Baru */
-        .input-row {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 8px;
-        }
-        .input-row input[type="text"] {
-            flex: 1;
-            padding: 5px;
-            background: #111;
-            border: 1px solid #444;
-            color: white;
-            border-radius: 4px;
-            font-size: 11px;
-        }
-        .btn-tool {
-            width: 28px;
-            height: 24px;
-            background: #444;
-            border: 1px solid #555;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-        }
-        .btn-tool:hover { background: #555; }
-        .btn-tool.active { background: #2196F3; border-color: #fff; }
-
-        .color-picker {
-            width: 50px;
-            height: 24px;
-            border: 1px solid #444;
-            padding: 0;
-            background: none;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-
-        /* Logo Upload UI */
-        .logo-upload-container {
-            display: flex;
-            gap: 8px;
-            margin-top: 5px;
-        }
-        .logo-upload-slot {
-            width: 45px;
-            height: 45px;
-            background: #222;
-            border: 1px dashed #555;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-        .logo-upload-slot img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .logo-upload-slot span {
-            font-size: 18px;
-            color: #666;
-        }
-
-        /* Preview logo kecik dalam section */
-        .mini-preview {
-            width: 24px;
-            height: 24px;
-            background: #222;
-            border: 1px solid #444;
-            margin-right: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 3px;
-        }
-        .mini-preview img { width: 90%; height: 90%; object-fit: contain; }
-
-        .memory-slots {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            gap: 3px;
-            padding: 5px 0;
-            list-style: none;
-        }
-        .memory-slots li {
-            background: #333;
-            color: #888;
-            height: 20px;
-            line-height: 20px;
-            text-align: center;
-            border-radius: 2px;
-            cursor: pointer;
-            font-size: 9px;
-            border: 1px solid transparent;
-        }
-        .memory-slots li.stored {
-            background: #222;
-            border-color: #555;
-            color: #fff;
-        }
-        .memory-slots li.active { background: #2196F3; color: white; }
-
-        /* Panel Main Settings */
+        body { padding: 10px; background: #1a1a1a; color: #fff; font-family: sans-serif; }
+        
+        /* Main Settings Style */
         #main-settings {
             background: #252525;
             padding: 10px;
@@ -125,55 +16,97 @@
             border-bottom: 2px solid #2196F3;
             margin-bottom: 15px;
         }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        /* Input Styles */
+        .input-row { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
+        .input-row input[type="text"] {
+            flex: 1; padding: 6px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; font-size: 11px;
+        }
+
+        /* Logo Slot Styles */
+        .logo-upload-container { display: flex; gap: 8px; margin-top: 8px; }
+        .logo-upload-slot {
+            width: 45px; height: 45px; background: #222; border: 1px dashed #555;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: 4px; overflow: hidden;
+        }
+        .logo-upload-slot img { width: 100%; height: 100%; object-fit: contain; }
+        .mini-preview { width: 24px; height: 24px; background: #222; border: 1px solid #444; margin-right: 5px; display: flex; align-items: center; justify-content: center; border-radius: 3px; }
+        .mini-preview img { width: 90%; height: 90%; object-fit: contain; }
+
+        /* Button & Switch Styles */
+        .btn-tool { width: 28px; height: 24px; background: #444; border: 1px solid #555; color: white; cursor: pointer; border-radius: 3px; font-size: 10px; font-weight: bold; }
+        .btn-tool:hover { background: #555; }
+        .btn-tool.active { background: #2196F3; border-color: #fff; }
+        .color-picker { width: 45px; height: 24px; border: 1px solid #444; background: none; cursor: pointer; border-radius: 3px; padding: 0; }
+
+        .memory-slots { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; padding: 5px 0; list-style: none; margin: 0; }
+        .memory-slots li { background: #333; color: #888; height: 20px; line-height: 20px; text-align: center; border-radius: 2px; cursor: pointer; font-size: 9px; }
+        .memory-slots li.stored { background: #1a3a5a; border: 1px solid #2196F3; color: #fff; }
+        .memory-slots li.active { background: #2196F3; color: white; }
+
+        /* Sortees/Section Style */
+        .sortees { background: #252525; border: 1px solid #333; border-radius: 5px; margin-bottom: 10px; padding: 10px; transition: 0.3s; }
+        .section-body { margin-top: 10px; }
+
+        /* Switch Toggle */
+        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #555; transition: .4s; border-radius: 18px; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #4CAF50; }
+        input:checked + .slider:before { transform: translateX(16px); }
     </style>
 </head>
-<body class="lower-thirds-panel">
+<body>
 
     <div id="alt-panel">
         
         <!-- MAIN SETTINGS -->
         <div id="main-settings">
-            <div class="header-row" style="margin-bottom: 5px;">
+            <div class="header-row">
                 <span>⚙️ MAIN SETTINGS</span>
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <button class="btn-tool" style="width:auto; padding:0 10px;" onclick="$('#customs-panel').slideToggle()">Customs</button>
+                    <button class="btn-tool" style="width:auto; padding:0 8px;" onclick="$('#customs-panel').slideToggle()">CUSTOMS</button>
                     <label class="switch">
-                        <input type="checkbox" id="lower-thirds-masterswitch">
+                        <input type="checkbox" id="lower-thirds-masterswitch" checked>
                         <span class="slider round"></span>
                     </label>
                 </div>
             </div>
 
-            <!-- Panel Upload Logo (Hidden by default) -->
             <div id="customs-panel" style="display:none; background:#1a1a1a; padding:10px; border-radius:4px; margin-top:10px;">
-                <label style="font-size:10px; color:#888; text-transform:uppercase;">Default Logos (Click to upload PNG)</label>
+                <label style="font-size:9px; color:#888;">DEFAULT LOGO (CLICK BOX TO UPLOAD)</label>
                 <div class="logo-upload-container">
-                    <div class="logo-upload-slot" onclick="document.getElementById('file-1').click()">
-                        <img id="preview-1" style="display:none;">
-                        <span id="label-1">+</span>
-                        <input type="file" id="file-1" hidden accept="image/*" onchange="uploadLogo(this, 1)">
-                    </div>
-                    <div class="logo-upload-slot" onclick="document.getElementById('file-2').click()">
-                        <img id="preview-2" style="display:none;">
-                        <span id="label-2">+</span>
-                        <input type="file" id="file-2" hidden accept="image/*" onchange="uploadLogo(this, 2)">
+                    <div class="logo-upload-slot" onclick="document.getElementById('file-global').click()">
+                        <img id="preview-global" style="display:none;">
+                        <span id="label-global">+</span>
+                        <input type="file" id="file-global" hidden accept="image/*" onchange="uploadLogo(this)">
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Container untuk 4 Lower Thirds -->
+        <!-- TEMPAT LOWER THIRDS 1-4 AKAN MUNCUL -->
         <div id="lt-sections-container"></div>
     </div>
 
-    <!-- Template Section untuk LT -->
+    <!-- TEMPLATE UNTUK SETIAP LOWER THIRD -->
     <template id="lt-section-template">
         <div class="sortees" id="alt-SECTION_ID-config-content">
-            
             <div class="header-row">
                 <div style="display: flex; align-items: center;">
                     <button class="btn-tool btn-plus" style="margin-right:8px;">+</button>
-                    <span style="color:#eee">LOWER THIRD SECTION_ID</span>
+                    <span style="color:#2196F3">LOWER THIRD SECTION_ID</span>
                 </div>
                 <label class="switch">
                     <input type="checkbox" id="lower-thirds-switchSECTION_ID" class="lt-switch">
@@ -181,36 +114,31 @@
                 </label>
             </div>
 
-            <!-- Content yang boleh disorokkan (Slide Toggle) -->
             <div class="section-body">
-                <!-- Baris Nama -->
                 <div class="input-row">
-                    <div class="mini-preview"><img id="mini-logo-SECTION_ID" src=""></div>
-                    <input type="text" id="alt-SECTION_ID-name" placeholder="TAZKIRAH JUMAAT">
+                    <div class="mini-preview"><img class="mini-logo-img" src=""></div>
+                    <input type="text" id="alt-SECTION_ID-name" placeholder="Nama / Tajuk Utama">
                     <button type="button" class="btn-tool btn-upper">A</button>
-                    <button type="button" class="btn-tool btn-bold">B</button>
                     <input type="color" id="alt-SECTION_ID-style-color-1" class="color-picker" value="#ffffff">
                 </div>
 
-                <!-- Baris Info -->
                 <div class="input-row">
-                    <div style="width:24px; margin-right:5px;"></div> <!-- Spacer -->
-                    <input type="text" id="alt-SECTION_ID-info" placeholder="AF Ustaz Zainal Abidin">
+                    <div style="width:24px; margin-right:5px;"></div>
+                    <input type="text" id="alt-SECTION_ID-info" placeholder="Info / Jawatan">
                     <button type="button" class="btn-tool btn-upper">A</button>
-                    <button type="button" class="btn-tool btn-bold">B</button>
                     <input type="color" id="alt-SECTION_ID-style-color-2" class="color-picker" value="#ffff00">
                 </div>
 
-                <!-- Slot Memori -->
                 <ul id="alt-SECTION_ID-memory-slots" class="memory-slots"></ul>
             </div>
         </div>
     </template>
 
     <script>
-        const bc = new BroadcastChannel('lower_thirds_channel');
+        // Gunakan nama channel yang sama dengan browser-source
+        const bc = new BroadcastChannel('obs-lower-thirds-channel');
 
-        // 1. Bina UI
+        // 1. Bina UI Automatik
         const container = $('#lt-sections-container');
         const template = $('#lt-section-template').html();
 
@@ -218,22 +146,21 @@
             let sectionHtml = template.replace(/SECTION_ID/g, i);
             container.append(sectionHtml);
 
+            // Tambah 10 slot memori
             let slotList = $(`#alt-${i}-memory-slots`);
             for (let s = 1; s <= 10; s++) {
                 slotList.append(`<li id="alt-${i}-slot-${s}">${s}</li>`);
             }
         }
 
-        // 2. Fungsi Muat Naik Logo (FileReader)
-        function uploadLogo(input, id) {
+        // 2. Logik Muat Naik Logo
+        function uploadLogo(input) {
             if (input.files && input.files[0]) {
                 let reader = new FileReader();
                 reader.onload = function(e) {
-                    $(`#preview-${id}`).attr('src', e.target.result).show();
-                    $(`#label-${id}`).hide();
-                    // Simpan ke localStorage
-                    localStorage.setItem(`global_logo_${id}`, e.target.result);
-                    // Update semua mini preview
+                    $(`#preview-global`).attr('src', e.target.result).show();
+                    $(`#label-global`).hide();
+                    localStorage.setItem(`global_logo_data`, e.target.result);
                     updateMiniPreviews();
                     function_send();
                 };
@@ -242,40 +169,38 @@
         }
 
         function updateMiniPreviews() {
-            let logo1 = localStorage.getItem('global_logo_1');
-            for(let i=1; i<=4; i++) {
-                if(logo1) $(`#mini-logo-${i}`).attr('src', logo1);
-            }
+            let logo = localStorage.getItem('global_logo_data');
+            if(logo) $('.mini-logo-img').attr('src', logo);
         }
 
-        // 3. Fungsi Tambah/Tolak (+) Toggle Visibility
+        // 3. Butang Tambah/Tolak (+)
         $(document).on('click', '.btn-plus', function() {
             let body = $(this).closest('.sortees').find('.section-body');
             body.slideToggle(200);
             $(this).text($(this).text() === '+' ? '-' : '+');
         });
 
-        // 4. Hantar Data ke OBS
+        // 4. Fungsi Hantar Data
         function function_send() {
             let data = {};
             let master = $('#lower-thirds-masterswitch').is(':checked');
-            let globalLogo = localStorage.getItem('global_logo_1');
+            let globalLogo = localStorage.getItem('global_logo_data');
             
             for(let i=1; i<=4; i++) {
-                let sw = $('#lower-thirds-switch' + i).is(':checked');
+                let sw = $(`#lower-thirds-switch${i}`).is(':checked');
                 data[`alt_${i}_switch`] = (master && sw) ? "true" : "false";
                 data[`alt_${i}_name`] = $(`#alt-${i}-name`).val();
                 data[`alt_${i}_info`] = $(`#alt-${i}-info`).val();
-                data[`alt_${i}_style_color_1`] = $(`#alt-${i}-style-color-1`).val();
-                data[`alt_${i}_style_color_2`] = $(`#alt-${i}-style-color-2`).val();
+                data[`alt_${i}_name_color`] = $(`#alt-${i}-style-color-1`).val();
+                data[`alt_${i}_info_color`] = $(`#alt-${i}-style-color-2`).val();
                 data[`alt_${i}_logo_image`] = globalLogo || "";
                 data[`alt_${i}_logo_switch`] = globalLogo ? "true" : "false";
                 data[`alt_${i}_align`] = "left";
                 data[`alt_${i}_style`] = "1";
             }
             bc.postMessage(data);
-            checkSwitchesVisual();
             savePanelSettings();
+            checkSwitchesVisual();
         }
 
         function checkSwitchesVisual() {
@@ -283,4 +208,86 @@
             for (let i = 1; i <= 4; i++) {
                 let sw = $(`#lower-thirds-switch${i}`).is(':checked');
                 let config = $(`#alt-${i}-config-content`);
-                config.css('border-left', (masterOn && sw) ? '4px solid #00ff00' : (sw ? '4px sol
+                if (masterOn && sw) config.css('border-left', '5px solid #4CAF50');
+                else if (sw) config.css('border-left', '5px solid #FF9800');
+                else config.css('border-left', '1px solid #333');
+            }
+        }
+
+        // 5. Logik Memori (Tahan 1s Simpan / Klik Muat)
+        $(document).on('mousedown', '[id*=-slot-]', function() {
+            let slotId = $(this).attr('id');
+            let altNum = slotId.split('-')[1];
+            this.isLongPress = false;
+            this.timer = setTimeout(() => {
+                localStorage.setItem(slotId + '_name', $(`#alt-${altNum}-name`).val());
+                localStorage.setItem(slotId + '_info', $(`#alt-${altNum}-info`).val());
+                $(this).addClass('stored');
+                this.isLongPress = true;
+            }, 1000);
+        }).on('mouseup mouseleave', '[id*=-slot-]', function() {
+            clearTimeout(this.timer);
+        }).on('click', '[id*=-slot-]', function() {
+            if (this.isLongPress) return;
+            let slotId = $(this).attr('id');
+            let altNum = slotId.split('-')[1];
+            let n = localStorage.getItem(slotId + '_name');
+            let f = localStorage.getItem(slotId + '_info');
+            if(n) {
+                $(`#alt-${altNum}-name`).val(n);
+                $(`#alt-${altNum}-info`).val(f);
+                $(`[id^=alt-${altNum}-slot-]`).removeClass('active');
+                $(this).addClass('active');
+                function_send();
+            }
+        });
+
+        // 6. Auto-Save Panel
+        function savePanelSettings() {
+            $('input').each(function() {
+                let id = $(this).attr('id');
+                if(id) {
+                    let val = $(this).attr('type') === 'checkbox' ? $(this).is(':checked') : $(this).val();
+                    localStorage.setItem("p_" + id, val);
+                }
+            });
+        }
+
+        function loadPanelSettings() {
+            $('input').each(function() {
+                let id = $(this).attr('id');
+                let saved = localStorage.getItem("p_" + id);
+                if (saved !== null) {
+                    if ($(this).attr('type') === 'checkbox') $(this).prop('checked', saved === 'true');
+                    else $(this).val(saved);
+                }
+            });
+            
+            // Load Logo
+            let savedLogo = localStorage.getItem('global_logo_data');
+            if(savedLogo) {
+                $(`#preview-global`).attr('src', savedLogo).show();
+                $(`#label-global`).hide();
+                updateMiniPreviews();
+            }
+
+            // Load Stored Memory UI
+            $('[id*=-slot-]').each(function() {
+                if (localStorage.getItem($(this).attr('id') + '_name')) $(this).addClass('stored');
+            });
+
+            checkSwitchesVisual();
+        }
+
+        $(document).ready(function() {
+            loadPanelSettings();
+            $(document).on('change input', 'input', function() { function_send(); });
+            $('.btn-upper').click(function() {
+                let inp = $(this).siblings('input[type="text"]');
+                inp.val(inp.val().toUpperCase());
+                function_send();
+            });
+        });
+    </script>
+</body>
+</html>
