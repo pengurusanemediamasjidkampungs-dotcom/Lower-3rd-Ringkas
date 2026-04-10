@@ -7,6 +7,15 @@
     <!-- Path CSS pastikan betul -->
     <link rel="stylesheet" href="common/css/style-source.css">
     <script src="common/js/jquery.js"></script>
+    <style>
+        /* Fallback jika CSS belum ada variable anim-speed */
+        :root {
+            --anim-speed: 0.6s;
+        }
+        .animation-in, .animation-out {
+            transition: all var(--anim-speed) ease-in-out;
+        }
+    </style>
 </head>
 <body class="browser-source lower-thirds">
 
@@ -65,9 +74,11 @@
     </div>
 
     <script type="text/javascript">
-        // Saluran komunikasi (Kekalkan kedua-duanya untuk kompatibiliti penuh)
+        // Saluran komunikasi
         const bcp = new BroadcastChannel('obs-lower-thirds-channel');
         const bcf = new BroadcastChannel('obs-lower-thirds-fonts');
+
+        let loopTimers = {}; // Simpan timer untuk setiap LT
 
         // Fungsi Animasi Masuk
         function animationIn(id) {
@@ -87,12 +98,43 @@
             el.classList.add("animation-out");
         }
 
+        // Fungsi Sistem Loop
+        function runLoopSystem(index, activeDur, idleDur) {
+            const ltId = `lower-third-${index}`;
+            
+            // Bersihkan timer sedia ada sebelum memulakan cycle baru
+            if (loopTimers[ltId]) clearTimeout(loopTimers[ltId]);
+
+            function cycle() {
+                // 1. Masuk
+                animationIn(ltId);
+                
+                // 2. Tunggu waktu aktif, kemudian keluar
+                loopTimers[ltId] = setTimeout(() => {
+                    animationOut(ltId);
+                    
+                    // 3. Tunggu waktu rehat, kemudian ulang
+                    loopTimers[ltId] = setTimeout(() => {
+                        cycle();
+                    }, parseInt(idleDur));
+                    
+                }, parseInt(activeDur));
+            }
+            
+            cycle();
+        }
+
         // 1. MENDENGAR PERUBAHAN DATA (BCP)
         bcp.onmessage = function (ev) {
             const data = ev.data;
             let root = document.documentElement;
 
-            // FUNGSI FONT DINAMIK (Dari Versi Pro)
+            // SET KELAJUAN ANIMASI DINAMIK
+            if (data.anim_speed) {
+                root.style.setProperty('--anim-speed', data.anim_speed + "s");
+            }
+
+            // FUNGSI FONT DINAMIK
             if (data.font_data) {
                 let fontStyle = document.getElementById('dynamic-font-style');
                 if (!fontStyle) {
@@ -117,32 +159,33 @@
             }
 
             for (let i = 1; i <= 4; i++) {
+                const ltId = `lower-third-${i}`;
+                const ltContainer = document.getElementById(ltId);
+                if (!ltContainer) continue;
+
+                // PADAM TIMER LAMA JIKA ADA UPDATE DATA
+                if (loopTimers[ltId]) {
+                    clearTimeout(loopTimers[ltId]);
+                }
+
                 // Kemaskini Teks
                 const nameEl = document.getElementById(`alt-${i}-name`);
                 const infoEl = document.getElementById(`alt-${i}-info`);
                 if (nameEl) nameEl.innerHTML = data[`alt_${i}_name`] || "";
                 if (infoEl) infoEl.innerHTML = data[`alt_${i}_info`] || "";
 
-                // Kemaskini Warna & Variabel Gaya (Kekalkan fungsi asal)
+                // Kemaskini Warna & Variabel Gaya
                 root.style.setProperty(`--alt-${i}-name-color`, data[`alt_${i}_name_color`]);
                 root.style.setProperty(`--alt-${i}-info-color`, data[`alt_${i}_info_color`]);
                 root.style.setProperty(`--alt-${i}-style-color-1`, data[`alt_${i}_style_color_1`]);
                 root.style.setProperty(`--alt-${i}-style-color-2`, data[`alt_${i}_style_color_2`]);
                 
-                // Saiz individu jika ada
                 if (data[`alt_${i}_size`]){
                     root.style.setProperty(`--alt-${i}-size`, data[`alt_${i}_size`] + "px");
                 }
 
-                // Kemaskini Kedudukan & Gaya
-                const ltContainer = document.getElementById(`lower-third-${i}`);
-                if (ltContainer) {
-                    ltContainer.className = `alt ${data[`alt_${i}_align`]} style-${data[`alt_${i}_style`]}`;
-                    
-                    if (data[`alt_${i}_switch`] === "false" && !ltContainer.classList.contains('animation-out')) {
-                        ltContainer.classList.add("hide-anim");
-                    }
-                }
+                // Kemaskini Kedudukan & Gaya Kelas
+                ltContainer.className = `alt ${data[`alt_${i}_align`]} style-${data[`alt_${i}_style`]}`;
 
                 // Logik Logo
                 const logoImg = document.getElementById(`alt-${i}-logo-image`);
@@ -157,16 +200,22 @@
                     }
                 }
 
-                // Trigger Animasi
-                if (data[`alt_${i}_switch`] === "true") {
-                    animationIn(`lower-third-${i}`);
+                // LOGIK ANIMASI (LOOP vs MANUAL)
+                if (data.global_loop === "true" && data[`alt_${i}_switch`] === "true") {
+                    // Jika mode Loop Aktif dan Switch LT ini On
+                    runLoopSystem(i, data.loop_active_dur || 5000, data.loop_idle_dur || 3000);
                 } else {
-                    animationOut(`lower-third-${i}`);
+                    // Manual Mode
+                    if (data[`alt_${i}_switch`] === "true") {
+                        animationIn(ltId);
+                    } else {
+                        animationOut(ltId);
+                    }
                 }
             }
         };
 
-        // 2. MENDENGAR FONT DARI SALURAN KHAS (BCF - Kekalkan fungsi asal)
+        // 2. MENDENGAR FONT DARI SALURAN KHAS (BCF)
         bcf.onmessage = function (ev) {
             if (ev.data && ev.data.new_font_to_send) {
                 $('head').append('<style>' + ev.data.new_font_to_send + '</style>');
