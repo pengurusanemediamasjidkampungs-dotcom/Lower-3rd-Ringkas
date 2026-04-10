@@ -1,11 +1,12 @@
-/* style-source.css */
+/* style-source.css - Gaya Emas/Hitam Premium */
+
 :root {
-    --alt-1-name-color: #ffffff;
-    --alt-1-info-color: #cccccc;
-    --alt-1-style-color-1: #d54141;
-    --alt-1-style-color-2: #222222;
-    --alt-1-size: 24px;
-    --animation-time: 0.8s;
+    --gold-primary: #d4af37;
+    --black-bg: rgba(0, 0, 0, 0.85);
+    --black-bg-light: rgba(0, 0, 0, 0.6);
+    --text-white: #ffffff;
+    --animation-speed: 0.6s;
+    --cubic-bezier: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body {
@@ -15,59 +16,73 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
+/* Bekas Utama */
 .alt {
     position: absolute;
-    bottom: 50px;
-    left: 50px;
+    bottom: 8%; /* Kedudukan mengikut gaya premium */
+    left: 5%;
     display: flex;
     align-items: center;
     visibility: hidden;
     opacity: 0;
-    transition: all var(--animation-time) ease;
+    transition: all var(--animation-speed) var(--cubic-bezier);
+    transform: translateX(-50px);
 }
 
-/* Animasi In */
+/* Animasi Masuk */
 .animation-in {
     visibility: visible;
     opacity: 1;
     transform: translateX(0);
 }
 
-/* Animasi Out */
+/* Animasi Keluar */
 .animation-out {
-    visibility: visible;
     opacity: 0;
-    transform: translateX(-100px);
+    transform: translateX(-20px);
+    transition: 0.4s ease-in;
 }
 
 .hide-anim {
     display: none;
 }
 
-/* Rupa Bentuk Grafik LT */
+/* Reka Bentuk Grafik (Kandungan Teks) */
 .text-content {
-    background: var(--alt-1-style-color-2);
-    border-left: 10px solid var(--alt-1-style-color-1);
-    padding: 10px 25px;
-    color: white;
-    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+    background: linear-gradient(90deg, var(--black-bg) 0%, var(--black-bg-light) 100%);
+    border-left: 5px solid var(--gold-primary); /* Garisan Emas Kiri */
+    border-top: 1px solid rgba(212, 175, 55, 0.3); /* Garisan Halus Atas */
+    padding: 8px 30px;
+    min-width: 300px;
+    backdrop-filter: blur(5px); /* Kesan Kaca */
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.4);
 }
 
+/* Nama (Tajuk Utama) */
 #alt-1-name, #alt-2-name, #alt-3-name, #alt-4-name {
-    font-size: var(--alt-1-size);
-    font-weight: bold;
-    color: var(--alt-1-name-color);
+    color: var(--text-white);
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
     text-transform: uppercase;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    letter-spacing: 1px;
 }
 
+/* Info (Tajuk Kecil) */
 #alt-1-info, #alt-2-info, #alt-3-info, #alt-4-info {
-    font-size: calc(var(--alt-1-size) * 0.7);
-    color: var(--alt-1-info-color);
+    color: var(--gold-primary); /* Teks Warna Emas */
+    font-size: 16px;
+    font-weight: 400;
+    margin-top: -2px;
+    letter-spacing: 0.5px;
 }
 
+/* Logo (Jika Ada) */
 .logo img {
-    height: 60px;
-    margin-right: 15px;
+    height: 70px;
+    margin-right: 20px;
+    filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5));
 }
 
 .no-logo {
