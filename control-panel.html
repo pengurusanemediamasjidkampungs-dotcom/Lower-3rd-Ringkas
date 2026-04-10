@@ -1,59 +1,167 @@
-// Gantikan fungsi function_send sedia ada dengan ini
-function function_send() {
-    // Ambil data dari semua input
-    let dataToSend = {};
+<script>
+    // --- KONFIGURASI ASAS ---
+    var bc = new BroadcastChannel('obs-lower-thirds-channel');
+    var bcf = new BroadcastChannel('obs-lower-thirds-fonts');
 
-    // Check Master Switch
-    let masterOn = document.getElementById("lower-thirds-masterswitch").checked;
+    // --- 1. FUNGSI PENGHANTARAN DATA (MANUAL) ---
+    function function_send() {
+        let dataToSend = {};
+        let masterOn = document.getElementById("lower-thirds-masterswitch").checked;
 
-    for (let i = 1; i <= 4; i++) {
-        // Ambil status switch manual
-        let isSwitchOn = document.getElementById(`lower-thirds-switch${i}`).checked;
-        
-        dataToSend[`alt_${i}_switch`] = (masterOn && isSwitchOn) ? "true" : "false";
-        dataToSend[`alt_${i}_name`] = $(`#alt-${i}-name`).val();
-        dataToSend[`alt_${i}_info`] = $(`#alt-${i}-info`).val();
-        dataToSend[`alt_${i}_style`] = $(`#alt-${i}-style`).val();
-        dataToSend[`alt_${i}_align`] = $(`input[name=alt-${i}-align]:checked`).val();
-        dataToSend[`alt_${i}_size`] = $(`#alt-${i}-size`).val();
-        dataToSend[`alt_${i}_font`] = $(`#alt-${i}-font`).val();
-        dataToSend[`alt_${i}_name_color`] = $(`#alt-${i}-name-color`).val();
-        dataToSend[`alt_${i}_info_color`] = $(`#alt-${i}-info-color`).val();
-        dataToSend[`alt_${i}_style_color_1`] = $(`#alt-${i}-style-color-1`).val();
-        dataToSend[`alt_${i}_style_color_2`] = $(`#alt-${i}-style-color-2`).val();
-        dataToSend[`alt_${i}_logo_switch`] = document.getElementById(`alt-${i}-logo`).checked ? "true" : "false";
-        dataToSend[`alt_${i}_logo_image`] = $(`#alt-${i}-logo-preview`).attr("src");
+        for (let i = 1; i <= 4; i++) {
+            let isSwitchOn = document.getElementById(`lower-thirds-switch${i}`).checked;
+            
+            dataToSend[`alt_${i}_switch`] = (masterOn && isSwitchOn) ? "true" : "false";
+            dataToSend[`alt_${i}_name`] = $(`#alt-${i}-name`).val();
+            dataToSend[`alt_${i}_info`] = $(`#alt-${i}-info`).val();
+            dataToSend[`alt_${i}_style`] = $(`#alt-${i}-style`).val();
+            dataToSend[`alt_${i}_align`] = $(`input[name=alt-${i}-align]:checked`).val();
+            dataToSend[`alt_${i}_size`] = $(`#alt-${i}-size`).val();
+            dataToSend[`alt_${i}_font`] = $(`#alt-${i}-font`).val();
+            dataToSend[`alt_${i}_name_color`] = $(`#alt-${i}-name-color`).val();
+            dataToSend[`alt_${i}_info_color`] = $(`#alt-${i}-info-color`).val();
+            dataToSend[`alt_${i}_style_color_1`] = $(`#alt-${i}-style-color-1`).val();
+            dataToSend[`alt_${i}_style_color_2`] = $(`#alt-${i}-style-color-2`).val();
+            dataToSend[`alt_${i}_logo_switch`] = document.getElementById(`alt-${i}-logo`).checked ? "true" : "false";
+            dataToSend[`alt_${i}_logo_image`] = $(`#alt-${i}-logo-preview`).attr("src");
+        }
+
+        bc.postMessage(dataToSend);
+        checkSwitches();
+        saveCurrentSettings(); // Simpan tetapan panel semasa
     }
 
-    // Hantar terus ke Browser Source melalui Broadcast Channel
-    bc.postMessage(dataToSend);
-}
-
-// Gantikan fungsi checkSwitches dengan ini (Buang semua monitor timer)
-function checkSwitches() {
-    let masterOn = document.getElementById("lower-thirds-masterswitch").checked;
-    
-    if (masterOn) {
-        document.getElementById("alt-main-config-content").classList.add("active");
-    } else {
-        document.getElementById("alt-main-config-content").classList.remove("active");
-    }
-
-    for (let i = 1; i <= 4; i++) {
-        let sw = document.getElementById(`lower-thirds-switch${i}`);
-        let config = document.getElementById(`alt-${i}-config-content`);
+    // --- 2. FUNGSI KAWALAN UI SWITCH ---
+    function checkSwitches() {
+        let masterOn = document.getElementById("lower-thirds-masterswitch").checked;
+        let masterPanel = document.getElementById("alt-main-config-content");
         
-        if (masterOn && sw.checked) {
-            config.classList.add("active");
-            config.classList.remove("inactive");
-        } else if (sw.checked) {
-            config.classList.add("inactive");
-            config.classList.remove("active");
-        } else {
-            config.classList.remove("active", "inactive");
+        if (masterOn) masterPanel.classList.add("active");
+        else masterPanel.classList.remove("active");
+
+        for (let i = 1; i <= 4; i++) {
+            let sw = document.getElementById(`lower-thirds-switch${i}`);
+            let config = document.getElementById(`alt-${i}-config-content`);
+            
+            if (masterOn && sw.checked) {
+                config.classList.add("active");
+                config.classList.remove("inactive");
+            } else if (sw.checked) {
+                config.classList.add("inactive");
+                config.classList.remove("active");
+            } else {
+                config.classList.remove("active", "inactive");
+            }
         }
     }
-}
 
-// Buang atau disable setInterval yang memanggil refreshData/checkUpdates jika ia mengganggu
-// Anda hanya perlukan function_send() dipanggil setiap kali ada perubahan input (on change).
+    // --- 3. SISTEM MEMORY SLOT (SIMPAN & MUAT) ---
+    function saveToSlot(slotId, name, info, logo) {
+        localStorage.setItem(slotId + "_name", name);
+        localStorage.setItem(slotId + "_info", info);
+        localStorage.setItem(slotId + "_logo", logo);
+        refreshSlotUI(); // Kemaskini rupa slot
+    }
+
+    function loadFromSlot(slotId) {
+        const savedName = localStorage.getItem(slotId + "_name");
+        const savedInfo = localStorage.getItem(slotId + "_info");
+        const savedLogo = localStorage.getItem(slotId + "_logo");
+
+        if (savedName !== null) {
+            let altNum = slotId.split('-')[1]; 
+            $(`#alt-${altNum}-name`).val(savedName);
+            $(`#alt-${altNum}-info`).val(savedInfo);
+            if(savedLogo && savedLogo !== "undefined") {
+                $(`#alt-${altNum}-logo-preview`).attr("src", savedLogo);
+            }
+            function_send(); 
+        }
+    }
+
+    function refreshSlotUI() {
+        $("[id^=alt-][id*=-slot-]").each(function() {
+            let slotId = $(this).attr('id');
+            if (localStorage.getItem(slotId + "_name")) {
+                $(this).addClass("stored"); // Tambah kelas CSS jika ada data
+                let name = localStorage.getItem(slotId + "_name");
+                $(this).find(".stored-name").text(name);
+            } else {
+                $(this).removeClass("stored");
+                $(this).find(".stored-name").text("");
+            }
+        });
+    }
+
+    // --- 4. LOGIK KLIK SLOT (MUAT & TEKAN LAMA UNTUK SIMPAN) ---
+    $(document).on('mousedown', "[id^=alt-][id*=-slot-]", function(e) {
+        let slotId = $(this).attr('id');
+        let altNum = slotId.split('-')[1];
+
+        this.downTimer = setTimeout(() => {
+            let currentName = $(`#alt-${altNum}-name`).val();
+            let currentInfo = $(`#alt-${altNum}-info`).val();
+            let currentLogo = $(`#alt-${altNum}-logo-preview`).attr("src");
+
+            if(currentName.trim() !== "") {
+                saveToSlot(slotId, currentName, currentInfo, currentLogo);
+                alert("Data disimpan ke slot!");
+            }
+            this.isLongPress = true;
+        }, 1000); 
+    }).on('mouseup mouseleave', "[id^=alt-][id*=-slot-]", function() {
+        clearTimeout(this.downTimer);
+    }).on('click', "[id^=alt-][id*=-slot-]", function() {
+        if (!this.isLongPress) {
+            loadFromSlot($(this).attr('id'));
+        }
+        this.isLongPress = false;
+    });
+
+    // --- 5. PENGURUSAN DATA SEMASA (TETAPAN PANEL) ---
+    function saveCurrentSettings() {
+        // Simpan status checkbox dan input supaya bila OBS buka, panel tak kosong
+        $('input.storable, input.checkbox-storable').each(function() {
+            let id = $(this).attr('id');
+            if ($(this).attr('type') === 'checkbox') {
+                localStorage.setItem("settings_" + id, $(this).is(':checked'));
+            } else {
+                localStorage.setItem("settings_" + id, $(this).val());
+            }
+        });
+    }
+
+    function loadCurrentSettings() {
+        $('input.storable, input.checkbox-storable').each(function() {
+            let id = $(this).attr('id');
+            let savedVal = localStorage.getItem("settings_" + id);
+            if (savedVal !== null) {
+                if ($(this).attr('type') === 'checkbox') {
+                    $(this).prop('checked', savedVal === 'true');
+                } else {
+                    $(this).val(savedVal);
+                }
+            }
+        });
+        refreshSlotUI();
+        checkSwitches();
+    }
+
+    // --- 6. EVENT LISTENERS (AUTO-SEND BILA INPUT BERUBAH) ---
+    $(document).ready(function() {
+        loadCurrentSettings();
+
+        // Trigger function_send bila ada perubahan pada input/checkbox/radio
+        $(document).on('change', 'input, select', function() {
+            function_send();
+        });
+
+        // Trigger manual untuk accordion (kekalkan fungsi asal UI anda)
+        $('.accordion').click(function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight) panel.style.maxHeight = null;
+            else panel.style.maxHeight = panel.scrollHeight + "px";
+        });
+    });
+</script>
