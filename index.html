@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - OBS Lower Thirds Manual</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        header {
+            background-color: #1a3a5a;
+            padding: 10px 20px;
+            text-align: center;
+            border-bottom: 2px solid #2196F3;
+        }
+        .main-container {
+            display: flex;
+            flex: 1;
+        }
+        .panel-side {
+            width: 60%;
+            border-right: 2px solid #333;
+        }
+        .preview-side {
+            width: 40%;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .preview-label {
+            background: #222;
+            padding: 5px;
+            text-align: center;
+            font-size: 12px;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+        .instructions {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            border: 1px solid #444;
+            max-width: 300px;
+        }
+        h3 { margin-top: 0; color: #2196F3; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <strong>OBS LOWER THIRDS - MANUAL DASHBOARD</strong>
+    </header>
+
+    <div class="main-container">
+        <!-- Bahagian Control Panel -->
+        <div class="panel-side">
+            <iframe src="control-panel.html" title="Control Panel"></iframe>
+        </div>
+
+        <!-- Bahagian Preview Source -->
+        <div class="preview-side">
+            <div class="preview-label">Live Preview (Browser Source)</div>
+            <iframe src="browser-source.html" title="Browser Source Preview"></iframe>
+        </div>
+    </div>
+
+    <!-- Kotak Panduan Ringkas -->
+    <div class="instructions">
+        <h3>Panduan OBS</h3>
+        <ul>
+            <li><strong>Browser Source:</strong> Masukkan <code>browser-source.html</code> ke dalam OBS.</li>
+            <li><strong>Control Panel:</strong> Masukkan <code>control-panel.html</code> ke dalam <em>Docks > Custom Browser Docks</em>.</li>
+            <li><strong>Memory Slot:</strong> Taip nama, <strong>Tahan 1 saat</strong> pada kotak Slot untuk simpan. Klik sekali untuk muat semula.</li>
+            <li>Data tetap tersimpan walaupun OBS ditutup.</li>
+        </ul>
+    </div>
+
+</body>
+</html>
