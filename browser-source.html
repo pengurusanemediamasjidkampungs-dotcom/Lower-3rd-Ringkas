@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Lower thirds Source - Simple</title>
+    <link rel="stylesheet" href="../common/css/style-source.css">
+    <script src="../common/js/jquery.js"></script>
+</head>
+<body class="browser-source lower-thirds">
+    <!-- Lower thirds 1-4 -->
+    <div id="lower-third-1" class="alt left style-1 hide-anim">
+        <div id="alt-1-logo" class="logo no-logo"><img id="alt-1-logo-image" src="//:0" /></div>
+        <div class="graph-1"></div>
+        <div class="text-content">
+            <div class="text-masker"><div id="alt-1-name"></div></div>
+            <div class="text-masker"><div id="alt-1-info"></div></div>
+        </div>
+        <div class="graph-2"></div>
+    </div>
+
+    <div id="lower-third-2" class="alt left style-1 hide-anim">
+        <div id="alt-2-logo" class="logo no-logo"><img id="alt-2-logo-image" src="//:0" /></div>
+        <div class="graph-1"></div>
+        <div class="text-content">
+            <div class="text-masker"><div id="alt-2-name"></div></div>
+            <div class="text-masker"><div id="alt-2-info"></div></div>
+        </div>
+        <div class="graph-2"></div>
+    </div>
+
+    <div id="lower-third-3" class="alt left style-1 hide-anim">
+        <div id="alt-3-logo" class="logo no-logo"><img id="alt-3-logo-image" src="//:0" /></div>
+        <div class="graph-1"></div>
+        <div class="text-content">
+            <div class="text-masker"><div id="alt-3-name"></div></div>
+            <div class="text-masker"><div id="alt-3-info"></div></div>
+        </div>
+        <div class="graph-2"></div>
+    </div>
+
+    <div id="lower-third-4" class="alt left style-1 hide-anim">
+        <div id="alt-4-logo" class="logo no-logo"><img id="alt-4-logo-image" src="//:0" /></div>
+        <div class="graph-1"></div>
+        <div class="text-content">
+            <div class="text-masker"><div id="alt-4-name"></div></div>
+            <div class="text-masker"><div id="alt-4-info"></div></div>
+        </div>
+        <div class="graph-2"></div>
+    </div>
+
+    <script>
+        const bcp = new BroadcastChannel('obs-lower-thirds-channel');
+        const bcf = new BroadcastChannel('obs-lower-thirds-fonts');
+
+        function animationIn(id) {
+            const el = document.getElementById(id);
+            el.classList.remove("hide-anim", "animation-out");
+            void el.offsetWidth; 
+            el.classList.add("animation-in");
+        }
+
+        function animationOut(id) {
+            const el = document.getElementById(id);
+            el.classList.remove("animation-in");
+            void el.offsetWidth;
+            el.classList.add("animation-out");
+        }
+
+        bcp.onmessage = function (ev) {
+            const data = ev.data;
+            let root = document.documentElement;
+
+            for (let i = 1; i <= 4; i++) {
+                // Update Texts
+                document.getElementById(`alt-${i}-name`).innerHTML = data[`alt_${i}_name`];
+                document.getElementById(`alt-${i}-info`).innerHTML = data[`alt_${i}_info`];
+
+                // Update Style Class
+                const el = document.getElementById(`lower-third-${i}`);
+                el.className = `alt ${data[`alt_${i}_align`]} style-${data[`alt_${i}_style`]}`;
+
+                // Update CSS Variables (Colors, sizes, etc)
+                root.style.setProperty(`--alt-${i}-name-color`, data[`alt_${i}_name_color`]);
+                root.style.setProperty(`--alt-${i}-info-color`, data[`alt_${i}_info_color`]);
+                root.style.setProperty(`--alt-${i}-style-color-1`, data[`alt_${i}_style_color_1`]);
+                root.style.setProperty(`--alt-${i}-style-color-2`, data[`alt_${i}_style_color_2`]);
+                root.style.setProperty(`--alt-${i}-font`, data[`alt_${i}_font`]);
+                root.style.setProperty(`--alt-${i}-size`, data[`alt_${i}_size`] + "px");
+
+                // Logo Logic
+                const logoImg = document.getElementById(`alt-${i}-logo-image`);
+                if (data[`alt_${i}_logo_switch`] === "true") {
+                    $(`#alt-${i}-logo`).removeClass("no-logo");
+                    logoImg.src = data[`alt_${i}_logo_image`];
+                } else {
+                    $(`#alt-${i}-logo`).addClass("no-logo");
+                    logoImg.src = "//:0";
+                }
+
+                // Manual Switch Logic (No Timer)
+                if (data[`alt_${i}_switch`] === "true") {
+                    animationIn(`lower-third-${i}`);
+                } else {
+                    animationOut(`lower-third-${i}`);
+                }
+            }
+        };
+
+        bcf.onmessage = function (ev) {
+            $('head').append('<style>' + ev.data.new_font_to_send + '</style>');
+        };
+    </script>
+</body>
+</html>
