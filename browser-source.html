@@ -2,102 +2,135 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Lower thirds Source - Simple</title>
-    <link rel="stylesheet" href="../common/css/style-source.css">
-    <script src="../common/js/jquery.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lower Thirds Source - Complete Manual</title>
+    <!-- Pastikan path CSS ini betul mengikut struktur folder anda -->
+    <link rel="stylesheet" href="common/css/style-source.css">
+    <script src="common/js/jquery.js"></script>
 </head>
 <body class="browser-source lower-thirds">
-    <!-- Lower thirds 1-4 -->
-    <div id="lower-third-1" class="alt left style-1 hide-anim">
-        <div id="alt-1-logo" class="logo no-logo"><img id="alt-1-logo-image" src="//:0" /></div>
-        <div class="graph-1"></div>
-        <div class="text-content">
-            <div class="text-masker"><div id="alt-1-name"></div></div>
-            <div class="text-masker"><div id="alt-1-info"></div></div>
+
+    <div id="container">
+        <!-- Lower third 1 -->
+        <div id="lower-third-1" class="alt left style-1 hide-anim">
+            <div id="alt-1-logo" class="logo no-logo">
+                <img id="alt-1-logo-image" src="//:0" />
+            </div>
+            <div class="graph-1"></div>
+            <div class="text-content">
+                <div class="text-mask"><div id="alt-1-name"></div></div>
+                <div class="text-mask"><div id="alt-1-info"></div></div>
+            </div>
+            <div class="graph-2"></div>
         </div>
-        <div class="graph-2"></div>
+
+        <!-- Lower third 2 -->
+        <div id="lower-third-2" class="alt left style-1 hide-anim">
+            <div id="alt-2-logo" class="logo no-logo">
+                <img id="alt-2-logo-image" src="//:0" />
+            </div>
+            <div class="graph-1"></div>
+            <div class="text-content">
+                <div class="text-mask"><div id="alt-2-name"></div></div>
+                <div class="text-mask"><div id="alt-2-info"></div></div>
+            </div>
+            <div class="graph-2"></div>
+        </div>
+
+        <!-- Lower third 3 -->
+        <div id="lower-third-3" class="alt left style-1 hide-anim">
+            <div id="alt-3-logo" class="logo no-logo">
+                <img id="alt-3-logo-image" src="//:0" />
+            </div>
+            <div class="graph-1"></div>
+            <div class="text-content">
+                <div class="text-mask"><div id="alt-3-name"></div></div>
+                <div class="text-mask"><div id="alt-3-info"></div></div>
+            </div>
+            <div class="graph-2"></div>
+        </div>
+
+        <!-- Lower third 4 -->
+        <div id="lower-third-4" class="alt left style-1 hide-anim">
+            <div id="alt-4-logo" class="logo no-logo">
+                <img id="alt-4-logo-image" src="//:0" />
+            </div>
+            <div class="graph-1"></div>
+            <div class="text-content">
+                <div class="text-mask"><div id="alt-4-name"></div></div>
+                <div class="text-mask"><div id="alt-4-info"></div></div>
+            </div>
+            <div class="graph-2"></div>
+        </div>
     </div>
 
-    <div id="lower-third-2" class="alt left style-1 hide-anim">
-        <div id="alt-2-logo" class="logo no-logo"><img id="alt-2-logo-image" src="//:0" /></div>
-        <div class="graph-1"></div>
-        <div class="text-content">
-            <div class="text-masker"><div id="alt-2-name"></div></div>
-            <div class="text-masker"><div id="alt-2-info"></div></div>
-        </div>
-        <div class="graph-2"></div>
-    </div>
-
-    <div id="lower-third-3" class="alt left style-1 hide-anim">
-        <div id="alt-3-logo" class="logo no-logo"><img id="alt-3-logo-image" src="//:0" /></div>
-        <div class="graph-1"></div>
-        <div class="text-content">
-            <div class="text-masker"><div id="alt-3-name"></div></div>
-            <div class="text-masker"><div id="alt-3-info"></div></div>
-        </div>
-        <div class="graph-2"></div>
-    </div>
-
-    <div id="lower-third-4" class="alt left style-1 hide-anim">
-        <div id="alt-4-logo" class="logo no-logo"><img id="alt-4-logo-image" src="//:0" /></div>
-        <div class="graph-1"></div>
-        <div class="text-content">
-            <div class="text-masker"><div id="alt-4-name"></div></div>
-            <div class="text-masker"><div id="alt-4-info"></div></div>
-        </div>
-        <div class="graph-2"></div>
-    </div>
-
-    <script>
+    <script type="text/javascript">
+        // Saluran komunikasi dengan Control Panel
         const bcp = new BroadcastChannel('obs-lower-thirds-channel');
         const bcf = new BroadcastChannel('obs-lower-thirds-fonts');
 
+        // Fungsi Animasi Masuk
         function animationIn(id) {
             const el = document.getElementById(id);
+            if (!el) return;
             el.classList.remove("hide-anim", "animation-out");
-            void el.offsetWidth; 
+            void el.offsetWidth; // Trigger reflow untuk restart animasi
             el.classList.add("animation-in");
         }
 
+        // Fungsi Animasi Keluar
         function animationOut(id) {
             const el = document.getElementById(id);
+            if (!el) return;
             el.classList.remove("animation-in");
             void el.offsetWidth;
             el.classList.add("animation-out");
         }
 
+        // Mendengar mesej perubahan data
         bcp.onmessage = function (ev) {
             const data = ev.data;
             let root = document.documentElement;
 
             for (let i = 1; i <= 4; i++) {
-                // Update Texts
-                document.getElementById(`alt-${i}-name`).innerHTML = data[`alt_${i}_name`];
-                document.getElementById(`alt-${i}-info`).innerHTML = data[`alt_${i}_info`];
+                // 1. Kemaskini Teks
+                const nameEl = document.getElementById(`alt-${i}-name`);
+                const infoEl = document.getElementById(`alt-${i}-info`);
+                if (nameEl) nameEl.innerHTML = data[`alt_${i}_name`] || "";
+                if (infoEl) infoEl.innerHTML = data[`alt_${i}_info`] || "";
 
-                // Update Style Class
-                const el = document.getElementById(`lower-third-${i}`);
-                el.className = `alt ${data[`alt_${i}_align`]} style-${data[`alt_${i}_style`]}`;
+                // 2. Kemaskini Kedudukan & Gaya (Alignment & Style)
+                const ltContainer = document.getElementById(`lower-third-${i}`);
+                if (ltContainer) {
+                    ltContainer.className = `alt ${data[`alt_${i}_align`]} style-${data[`alt_${i}_style`]}`;
+                    
+                    // Jika data switch adalah false, pastikan ia ada kelas hide-anim asalnya
+                    if (data[`alt_${i}_switch`] === "false" && !ltContainer.classList.contains('animation-out')) {
+                        ltContainer.classList.add("hide-anim");
+                    }
+                }
 
-                // Update CSS Variables (Colors, sizes, etc)
+                // 3. Kemaskini Warna & Saiz melalui CSS Variables
                 root.style.setProperty(`--alt-${i}-name-color`, data[`alt_${i}_name_color`]);
                 root.style.setProperty(`--alt-${i}-info-color`, data[`alt_${i}_info_color`]);
                 root.style.setProperty(`--alt-${i}-style-color-1`, data[`alt_${i}_style_color_1`]);
                 root.style.setProperty(`--alt-${i}-style-color-2`, data[`alt_${i}_style_color_2`]);
-                root.style.setProperty(`--alt-${i}-font`, data[`alt_${i}_font`]);
-                root.style.setProperty(`--alt-${i}-size`, data[`alt_${i}_size`] + "px");
+                root.style.setProperty(`--alt-${i}-size`, (data[`alt_${i}_size`] || 24) + "px");
 
-                // Logo Logic
+                // 4. Logik Logo
                 const logoImg = document.getElementById(`alt-${i}-logo-image`);
-                if (data[`alt_${i}_logo_switch`] === "true") {
-                    $(`#alt-${i}-logo`).removeClass("no-logo");
-                    logoImg.src = data[`alt_${i}_logo_image`];
-                } else {
-                    $(`#alt-${i}-logo`).addClass("no-logo");
-                    logoImg.src = "//:0";
+                const logoDiv = document.getElementById(`alt-${i}-logo`);
+                if (logoImg && logoDiv) {
+                    if (data[`alt_${i}_logo_switch`] === "true" && data[`alt_${i}_logo_image`]) {
+                        logoDiv.classList.remove("no-logo");
+                        logoImg.src = data[`alt_${i}_logo_image`];
+                    } else {
+                        logoDiv.classList.add("no-logo");
+                        logoImg.src = "//:0";
+                    }
                 }
 
-                // Manual Switch Logic (No Timer)
+                // 5. Trigger Animasi Berdasarkan Switch Manual
                 if (data[`alt_${i}_switch`] === "true") {
                     animationIn(`lower-third-${i}`);
                 } else {
@@ -106,9 +139,13 @@
             }
         };
 
+        // Mendengar kemaskini Font dari Control Panel
         bcf.onmessage = function (ev) {
-            $('head').append('<style>' + ev.data.new_font_to_send + '</style>');
+            if (ev.data && ev.data.new_font_to_send) {
+                $('head').append('<style>' + ev.data.new_font_to_send + '</style>');
+            }
         };
+
     </script>
 </body>
 </html>
