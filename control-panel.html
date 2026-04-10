@@ -1,0 +1,59 @@
+// Gantikan fungsi function_send sedia ada dengan ini
+function function_send() {
+    // Ambil data dari semua input
+    let dataToSend = {};
+
+    // Check Master Switch
+    let masterOn = document.getElementById("lower-thirds-masterswitch").checked;
+
+    for (let i = 1; i <= 4; i++) {
+        // Ambil status switch manual
+        let isSwitchOn = document.getElementById(`lower-thirds-switch${i}`).checked;
+        
+        dataToSend[`alt_${i}_switch`] = (masterOn && isSwitchOn) ? "true" : "false";
+        dataToSend[`alt_${i}_name`] = $(`#alt-${i}-name`).val();
+        dataToSend[`alt_${i}_info`] = $(`#alt-${i}-info`).val();
+        dataToSend[`alt_${i}_style`] = $(`#alt-${i}-style`).val();
+        dataToSend[`alt_${i}_align`] = $(`input[name=alt-${i}-align]:checked`).val();
+        dataToSend[`alt_${i}_size`] = $(`#alt-${i}-size`).val();
+        dataToSend[`alt_${i}_font`] = $(`#alt-${i}-font`).val();
+        dataToSend[`alt_${i}_name_color`] = $(`#alt-${i}-name-color`).val();
+        dataToSend[`alt_${i}_info_color`] = $(`#alt-${i}-info-color`).val();
+        dataToSend[`alt_${i}_style_color_1`] = $(`#alt-${i}-style-color-1`).val();
+        dataToSend[`alt_${i}_style_color_2`] = $(`#alt-${i}-style-color-2`).val();
+        dataToSend[`alt_${i}_logo_switch`] = document.getElementById(`alt-${i}-logo`).checked ? "true" : "false";
+        dataToSend[`alt_${i}_logo_image`] = $(`#alt-${i}-logo-preview`).attr("src");
+    }
+
+    // Hantar terus ke Browser Source melalui Broadcast Channel
+    bc.postMessage(dataToSend);
+}
+
+// Gantikan fungsi checkSwitches dengan ini (Buang semua monitor timer)
+function checkSwitches() {
+    let masterOn = document.getElementById("lower-thirds-masterswitch").checked;
+    
+    if (masterOn) {
+        document.getElementById("alt-main-config-content").classList.add("active");
+    } else {
+        document.getElementById("alt-main-config-content").classList.remove("active");
+    }
+
+    for (let i = 1; i <= 4; i++) {
+        let sw = document.getElementById(`lower-thirds-switch${i}`);
+        let config = document.getElementById(`alt-${i}-config-content`);
+        
+        if (masterOn && sw.checked) {
+            config.classList.add("active");
+            config.classList.remove("inactive");
+        } else if (sw.checked) {
+            config.classList.add("inactive");
+            config.classList.remove("active");
+        } else {
+            config.classList.remove("active", "inactive");
+        }
+    }
+}
+
+// Buang atau disable setInterval yang memanggil refreshData/checkUpdates jika ia mengganggu
+// Anda hanya perlukan function_send() dipanggil setiap kali ada perubahan input (on change).
