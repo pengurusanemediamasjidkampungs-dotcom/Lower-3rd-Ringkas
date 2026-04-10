@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8">
     <title>LT Control Panel - Manual & Slots</title>
+    <!-- Pastikan path CSS ini betul mengikut folder anda -->
     <link rel="stylesheet" href="common/css/style-control_panel.css">
-    <script src="common/js/jquery.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        /* Tambahan CSS untuk susunan baru */
         .input-row {
             display: flex;
             align-items: center;
@@ -63,23 +63,23 @@
             font-size: 11px;
             border: 1px solid transparent;
             transition: 0.2s;
+            user-select: none; /* Elak text terpilih masa tekan lama */
         }
         .memory-slots li.stored {
             background: #1a3a5a;
             border-color: #2196F3;
         }
         .memory-slots li:active { background: #555; }
-        .stored-name { display: none; }
     </style>
 </head>
 <body class="lower-thirds-panel">
 
     <div id="alt-panel">
         <!-- Master Switch -->
-        <div id="alt-main-config-content" class="sortees" style="background: #1a3a5a; margin-bottom: 20px; padding: 10px; border-radius: 5px;">
+        <div id="alt-main-config-content" style="background: #1a3a5a; margin-bottom: 20px; padding: 10px; border-radius: 5px;">
             <div style="display: flex; align-items: center;">
                 <label class="switch">
-                    <input type="checkbox" id="lower-thirds-masterswitch" class="checkbox-storable">
+                    <input type="checkbox" id="lower-thirds-masterswitch">
                     <span class="slider round"></span>
                 </label>
                 <strong style="margin-left: 15px; color: white;">MASTER SWITCH (AKTIFKAN SEMUA)</strong>
@@ -90,49 +90,51 @@
         <div id="lt-sections-container"></div>
     </div>
 
-    <!-- Template Section untuk LT (SUSUNAN BARU) -->
+    <!-- Template Section untuk LT -->
     <template id="lt-section-template">
-        <div class="sortees" id="alt-SECTION_ID-config-content" style="border-radius: 5px; margin-bottom: 15px; padding: 10px; border: 1px solid #444;">
+        <div class="sortees" id="alt-SECTION_ID-config-content" style="border-radius: 5px; margin-bottom: 15px; padding: 10px; border: 1px solid #444; transition: 0.3s;">
             
             <div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <div style="display: flex; align-items: center;">
                     <label class="switch">
-                        <input type="checkbox" id="lower-thirds-switchSECTION_ID" class="checkbox-storable lt-switch">
+                        <input type="checkbox" id="lower-thirds-switchSECTION_ID" class="lt-switch">
                         <span class="slider round"></span>
                     </label>
                     <span style="margin-left: 10px; font-weight: bold; color: #ddd;">LOWER THIRD <span class="id-num">SECTION_ID</span></span>
                 </div>
-                <div class="drag-handle" style="cursor: grab; color: #666;">:::</div>
             </div>
 
-            <!-- Baris Nama: Input -> A -> B -> Color -->
+            <!-- Baris Nama -->
             <div class="input-row">
-                <input type="text" id="alt-SECTION_ID-name" class="storable" placeholder="Nama">
-                <button type="button" class="btn-tool btn-upper" title="Uppercase">A</button>
-                <button type="button" class="btn-tool btn-bold" title="Bold">B</button>
-                <input type="color" id="alt-SECTION_ID-name-color" class="storable color-picker" value="#ffffff">
+                <input type="text" id="alt-SECTION_ID-name" placeholder="Nama">
+                <button type="button" class="btn-tool btn-upper">A</button>
+                <button type="button" class="btn-tool btn-bold">B</button>
+                <!-- ID diselaraskan dengan function_send -->
+                <input type="color" id="alt-SECTION_ID-style-color-1" class="color-picker" value="#ffffff">
             </div>
 
-            <!-- Baris Info: Input -> A -> B -> Color -->
+            <!-- Baris Info -->
             <div class="input-row">
-                <input type="text" id="alt-SECTION_ID-info" class="storable" placeholder="Info">
-                <button type="button" class="btn-tool btn-upper" title="Uppercase">A</button>
-                <button type="button" class="btn-tool btn-bold" title="Bold">B</button>
-                <input type="color" id="alt-SECTION_ID-info-color" class="storable color-picker" value="#cccccc">
+                <input type="text" id="alt-SECTION_ID-info" placeholder="Info">
+                <button type="button" class="btn-tool btn-upper">A</button>
+                <button type="button" class="btn-tool btn-bold">B</button>
+                <!-- ID diselaraskan dengan function_send -->
+                <input type="color" id="alt-SECTION_ID-style-color-2" class="color-picker" value="#cccccc">
             </div>
 
             <!-- Slot Memori -->
             <div style="margin-top: 10px;">
-                <label style="font-size: 10px; color: #888; text-transform: uppercase;">Memory Slots</label>
+                <label style="font-size: 10px; color: #888; text-transform: uppercase;">Memory Slots (Tahan 1s Simpan / Klik Load)</label>
                 <ul id="alt-SECTION_ID-memory-slots" class="memory-slots"></ul>
             </div>
         </div>
     </template>
 
     <script>
-        var bc = new BroadcastChannel('obs-lower-thirds-channel');
+        // 1. Inisialisasi BroadcastChannel
+        const bc = new BroadcastChannel('lower_thirds_channel');
 
-        // Bina UI 4 Section
+        // 2. Bina UI 4 Section secara automatik
         const container = $('#lt-sections-container');
         const template = $('#lt-section-template').html();
 
@@ -140,122 +142,126 @@
             let sectionHtml = template.replace(/SECTION_ID/g, i);
             container.append(sectionHtml);
 
+            // Tambah 10 slot memori bagi setiap section
             let slotList = $(`#alt-${i}-memory-slots`);
             for (let s = 1; s <= 10; s++) {
-                slotList.append(`<li id="alt-${i}-slot-${s}">${s}<div class="stored-name"></div></li>`);
+                slotList.append(`<li id="alt-${i}-slot-${s}">${s}</li>`);
             }
         }
 
-        // Fungsi Hantar Data
+        // 3. Fungsi Utama: Hantar Data ke OBS
         function function_send() {
-            let dataToSend = {};
-            let masterOn = document.getElementById("lower-thirds-masterswitch").checked;
-
-            for (let i = 1; i <= 4; i++) {
-                let isSwitchOn = document.getElementById(`lower-thirds-switch${i}`).checked;
-                
-                dataToSend[`alt_${i}_switch`] = (masterOn && isSwitchOn) ? "true" : "false";
-                dataToSend[`alt_${i}_name`] = $(`#alt-${i}-name`).val();
-                dataToSend[`alt_${i}_info`] = $(`#alt-${i}-info`).val();
-                dataToSend[`alt_${i}_name_color`] = $(`#alt-${i}-name-color`).val();
-                dataToSend[`alt_${i}_info_color`] = $(`#alt-${i}-info-color`).val();
-                
-                // Tambahan: Logik untuk Uppercase/Bold boleh ditambah di sini jika perlu hantar ke overlay
+            let data = {};
+            let master = $('#lower-thirds-masterswitch').is(':checked');
+            
+            for(let i=1; i<=4; i++) {
+                let sw = $('#lower-thirds-switch' + i).is(':checked');
+                data[`alt_${i}_switch`] = (master && sw) ? "true" : "false";
+                data[`alt_${i}_name`] = $(`#alt-${i}-name`).val();
+                data[`alt_${i}_info`] = $(`#alt-${i}-info`).val();
+                data[`alt_${i}_style_color_1`] = $(`#alt-${i}-style-color-1`).val();
+                data[`alt_${i}_style_color_2`] = $(`#alt-${i}-style-color-2`).val();
+                data[`alt_${i}_align`] = "left";
+                data[`alt_${i}_style`] = "1";
             }
-
-            bc.postMessage(dataToSend);
-            checkSwitches();
-            saveCurrentSettings(); 
+            bc.postMessage(data);
+            checkSwitchesVisual(); // Update warna border
+            savePanelSettings();   // Simpan keadaan panel (teks/suis)
         }
 
-        function checkSwitches() {
-            let masterOn = document.getElementById("lower-thirds-masterswitch").checked;
+        // Visual feedback untuk border section
+        function checkSwitchesVisual() {
+            let masterOn = $('#lower-thirds-masterswitch').is(':checked');
             for (let i = 1; i <= 4; i++) {
-                let sw = document.getElementById(`lower-thirds-switch${i}`);
-                let config = document.getElementById(`alt-${i}-config-content`);
-                if (masterOn && sw.checked) {
-                    config.style.borderLeft = "5px solid #00ff00";
-                } else if (sw.checked) {
-                    config.style.borderLeft = "5px solid #ffaa00";
+                let sw = $(`#lower-thirds-switch${i}`).is(':checked');
+                let config = $(`#alt-${i}-config-content`);
+                if (masterOn && sw) {
+                    config.css('border-left', '5px solid #00ff00'); // Hijau (Aktif)
+                } else if (sw) {
+                    config.css('border-left', '5px solid #ffaa00'); // Jingga (Standby)
                 } else {
-                    config.style.borderLeft = "1px solid #444";
+                    config.css('border-left', '1px solid #444');    // Biasa
                 }
             }
         }
 
-        // Memory Slot Logic (Ringkas)
-        function saveToSlot(slotId, name, info) {
-            localStorage.setItem(slotId + "_name", name);
-            localStorage.setItem(slotId + "_info", info);
-            refreshSlotUI(); 
-        }
-
-        function loadFromSlot(slotId) {
-            const savedName = localStorage.getItem(slotId + "_name");
-            const savedInfo = localStorage.getItem(slotId + "_info");
-            if (savedName !== null) {
-                let altNum = slotId.split('-')[1]; 
-                $(`#alt-${altNum}-name`).val(savedName);
-                $(`#alt-${altNum}-info`).val(savedInfo);
-                function_send(); 
-            }
-        }
-
-        function refreshSlotUI() {
-            $("[id^=alt-][id*=-slot-]").each(function() {
-                let slotId = $(this).attr('id');
-                if (localStorage.getItem(slotId + "_name")) {
-                    $(this).addClass("stored");
-                } else {
-                    $(this).removeClass("stored");
-                }
-            });
-        }
-
-        // Event Click Slots
-        $(document).on('mousedown', "[id^=alt-][id*=-slot-]", function(e) {
+        // 4. Logik Slot - Klik untuk Load, Tahan 1 saat untuk Save
+        $(document).on('mousedown', '[id*=-slot-]', function() {
             let slotId = $(this).attr('id');
             let altNum = slotId.split('-')[1];
-            this.downTimer = setTimeout(() => {
-                saveToSlot(slotId, $(`#alt-${altNum}-name`).val(), $(`#alt-${altNum}-info`).val());
-                this.isLongPress = true;
-            }, 1000); 
-        }).on('mouseup mouseleave', "[id^=alt-][id*=-slot-]", function() {
-            clearTimeout(this.downTimer);
-        }).on('click', "[id^=alt-][id*=-slot-]", function() {
-            if (!this.isLongPress) loadFromSlot($(this).attr('id'));
             this.isLongPress = false;
+
+            this.longClickTimer = setTimeout(() => {
+                let name = $(`#alt-${altNum}-name`).val();
+                let info = $(`#alt-${altNum}-info`).val();
+                if(name) {
+                    localStorage.setItem(slotId + '_name', name);
+                    localStorage.setItem(slotId + '_info', info);
+                    $(this).addClass('stored');
+                    this.isLongPress = true;
+                    alert("Data Slot " + slotId.split('-').pop() + " Disimpan!");
+                }
+            }, 1000);
+        }).on('mouseup mouseleave', '[id*=-slot-]', function() {
+            clearTimeout(this.longClickTimer);
+        }).on('click', '[id*=-slot-]', function() {
+            if (this.isLongPress) return; // Jika baru lepas simpan, jangan load
+
+            let slotId = $(this).attr('id');
+            let altNum = slotId.split('-')[1];
+            let n = localStorage.getItem(slotId + '_name');
+            let f = localStorage.getItem(slotId + '_info');
+            
+            if(n) {
+                $(`#alt-${altNum}-name`).val(n);
+                $(`#alt-${altNum}-info`).val(f);
+                function_send(); // Terus update ke OBS secara manual
+            }
         });
 
-        // Simpan & Muat Tetapan Panel
-        function saveCurrentSettings() {
+        // 5. Simpan & Muat Tetapan Panel (Auto-save)
+        function savePanelSettings() {
             $('input').each(function() {
                 let id = $(this).attr('id');
-                if (!id) return;
-                localStorage.setItem("settings_" + id, $(this).attr('type') === 'checkbox' ? $(this).is(':checked') : $(this).val());
+                if (id) {
+                    let val = $(this).attr('type') === 'checkbox' ? $(this).is(':checked') : $(this).val();
+                    localStorage.setItem("panel_" + id, val);
+                }
             });
         }
 
-        function loadCurrentSettings() {
+        function loadPanelSettings() {
             $('input').each(function() {
                 let id = $(this).attr('id');
-                let savedVal = localStorage.getItem("settings_" + id);
-                if (savedVal !== null) {
-                    if ($(this).attr('type') === 'checkbox') $(this).prop('checked', savedVal === 'true');
-                    else $(this).val(savedVal);
+                let saved = localStorage.getItem("panel_" + id);
+                if (saved !== null) {
+                    if ($(this).attr('type') === 'checkbox') {
+                        $(this).prop('checked', saved === 'true');
+                    } else {
+                        $(this).val(saved);
+                    }
                 }
             });
             refreshSlotUI();
-            checkSwitches();
+            checkSwitchesVisual();
         }
 
+        function refreshSlotUI() {
+            $('[id*=-slot-]').each(function() {
+                if (localStorage.getItem($(this).attr('id') + '_name')) {
+                    $(this).addClass('stored');
+                }
+            });
+        }
+
+        // Event Listener untuk input & switch
         $(document).ready(function() {
-            loadCurrentSettings();
+            loadPanelSettings();
+
             $(document).on('change input', 'input', function() {
                 function_send();
             });
 
-            // Toggle Button Visual
             $('.btn-tool').click(function() {
                 $(this).toggleClass('active');
             });
