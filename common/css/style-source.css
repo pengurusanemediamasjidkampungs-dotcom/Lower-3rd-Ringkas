@@ -1,4 +1,4 @@
-/* style-source.css - Gaya Modern Rounded Pro (Google Sans Edition) */
+/* style-source.css - Gaya Modern Rounded Pro (Google Sans Edition) - Updated */
 
 /* 1. IMPORT GOOGLE SANS */
 @font-face {
@@ -17,8 +17,9 @@
     --text-yellow: #ffeb3b;           /* Warna kuning untuk info */
     
     /* Animasi & Transisi */
-    --animation-speed: 0.6s;
-    --cubic-bezier: cubic-bezier(0.16, 1, 0.3, 1);
+    --anim-speed: 0.6s;               /* Kelajuan animasi baru */
+    --cubic-in: cubic-bezier(0.16, 1, 0.3, 1);
+    --cubic-out: cubic-bezier(0.7, 0, 0.84, 0);
     
     /* Variable Dinamik (Diterima dari Control Panel) */
     --global-font-size: 24px; 
@@ -45,7 +46,6 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    /* Menggunakan Google Sans dengan fallback font standard */
     font-family: 'Google Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -54,41 +54,56 @@ body {
 /* 3. BEKAS UTAMA (CONTAINER) */
 .alt {
     position: absolute;
-    bottom: 8%; /* Kedudukan dari bawah skrin */
-    left: 5%;   /* Kedudukan dari kiri skrin */
+    bottom: 8%;
+    left: 5%;
     display: flex;
     align-items: center;
     
     /* Gaya Kotak Modern */
     background: var(--bg-box);
     padding: 12px 25px;
-    border-radius: 12px; /* Sudut bulat ketara */
+    border-radius: 12px;
     border: 1px solid #333;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    
-    /* Status Asal (Tersembunyi untuk Animasi) */
+    backdrop-filter: blur(8px);
+
+    /* Status Asal (Tersembunyi) */
     visibility: hidden;
     opacity: 0;
-    transition: all var(--animation-speed) var(--cubic-bezier);
     transform: translateX(-50px);
-    backdrop-filter: blur(8px); /* Kesan kaca lembut */
+    
+    /* Logik Transisi Baru */
+    transition: 
+        transform var(--anim-speed) var(--cubic-in), 
+        opacity var(--anim-speed) ease-out,
+        visibility var(--anim-speed);
+    will-change: transform, opacity;
 }
 
 /* 4. SISTEM ANIMASI (IN/OUT) */
+
+/* Animasi Masuk: Slide ke kedudukan asal + Fade in */
 .animation-in {
-    visibility: visible;
-    opacity: 1;
-    transform: translateX(0);
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: translateX(0) !important;
 }
 
+/* Animasi Keluar: Meluncur keluar ke kiri + Fade out */
 .animation-out {
+    visibility: hidden;
     opacity: 0;
-    transform: translateX(-20px);
-    transition: 0.4s ease-in;
+    transform: translateX(-40px);
+    transition: 
+        transform var(--anim-speed) var(--cubic-out), 
+        opacity var(--anim-speed) ease-in,
+        visibility var(--anim-speed);
 }
 
+/* Menggantikan display:none supaya transisi tidak terputus */
 .hide-anim {
-    display: none;
+    visibility: hidden;
+    opacity: 0;
 }
 
 /* 5. BAHAGIAN LOGO */
@@ -97,12 +112,11 @@ body {
     align-items: center;
     margin-right: 18px;
     padding-right: 18px;
-    /* Garisan Pemisah Merah */
     border-right: 3px solid var(--accent-line);
 }
 
 .logo img {
-    height: 55px; /* Saiz logo seimbang */
+    height: 55px;
     width: auto;
     filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
 }
@@ -118,25 +132,22 @@ body {
     justify-content: center;
 }
 
-/* Tajuk Utama (Nama) */
 [id*="-name"] {
     color: var(--text-white);
-    font-size: var(--global-font-size); /* Saiz dinamik */
-    font-weight: 500; /* Medium weight (Ciri khas Google Sans) */
+    font-size: var(--global-font-size);
+    font-weight: 500;
     margin: 0;
     padding: 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     line-height: 1.1;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
 }
 
-/* Tajuk Kecil (Info) */
 [id*="-info"] {
     color: var(--text-yellow);
-    /* Saiz info adalah 70% daripada saiz nama secara automatik */
     font-size: calc(var(--global-font-size) * 0.7);
-    font-weight: 400; /* Regular weight */
+    font-weight: 400;
     margin-top: 4px;
     letter-spacing: 0.2px;
 }
@@ -159,6 +170,7 @@ body {
     left: auto;
     right: 5%;
     flex-direction: row-reverse;
+    transform: translateX(50px); /* Masuk dari kanan */
 }
 
 .alt.right .logo {
@@ -170,14 +182,10 @@ body {
     border-left: 3px solid var(--accent-line);
 }
 
-.alt.right {
-    transform: translateX(50px); /* Masuk dari kanan */
-}
-
 .alt.right.animation-in {
-    transform: translateX(0);
+    transform: translateX(0) !important;
 }
 
 .alt.right.animation-out {
-    transform: translateX(20px);
+    transform: translateX(40px); /* Meluncur keluar ke kanan */
 }
