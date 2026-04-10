@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lower Thirds Source - Complete Manual</title>
-    <!-- Pastikan path CSS ini betul mengikut struktur folder anda -->
+    <title>Lower Thirds Source - Pro Edition (Combined)</title>
+    <!-- Path CSS pastikan betul -->
     <link rel="stylesheet" href="common/css/style-source.css">
     <script src="common/js/jquery.js"></script>
 </head>
@@ -65,7 +65,7 @@
     </div>
 
     <script type="text/javascript">
-        // Saluran komunikasi dengan Control Panel
+        // Saluran komunikasi (Kekalkan kedua-duanya untuk kompatibiliti penuh)
         const bcp = new BroadcastChannel('obs-lower-thirds-channel');
         const bcf = new BroadcastChannel('obs-lower-thirds-fonts');
 
@@ -74,7 +74,7 @@
             const el = document.getElementById(id);
             if (!el) return;
             el.classList.remove("hide-anim", "animation-out");
-            void el.offsetWidth; // Trigger reflow untuk restart animasi
+            void el.offsetWidth; // Trigger reflow
             el.classList.add("animation-in");
         }
 
@@ -87,37 +87,64 @@
             el.classList.add("animation-out");
         }
 
-        // Mendengar mesej perubahan data
+        // 1. MENDENGAR PERUBAHAN DATA (BCP)
         bcp.onmessage = function (ev) {
             const data = ev.data;
             let root = document.documentElement;
 
+            // FUNGSI FONT DINAMIK (Dari Versi Pro)
+            if (data.font_data) {
+                let fontStyle = document.getElementById('dynamic-font-style');
+                if (!fontStyle) {
+                    fontStyle = document.createElement('style');
+                    fontStyle.id = 'dynamic-font-style';
+                    document.head.appendChild(fontStyle);
+                }
+                fontStyle.innerHTML = `
+                    @font-face {
+                        font-family: 'CustomUserFont';
+                        src: url('${data.font_data}');
+                    }
+                    body, .alt { 
+                        font-family: 'CustomUserFont', sans-serif !important; 
+                    }
+                `;
+            }
+
+            // KEMASKINI SAIZ FONT GLOBAL
+            if (data.font_size) {
+                root.style.setProperty('--global-font-size', data.font_size + "px");
+            }
+
             for (let i = 1; i <= 4; i++) {
-                // 1. Kemaskini Teks
+                // Kemaskini Teks
                 const nameEl = document.getElementById(`alt-${i}-name`);
                 const infoEl = document.getElementById(`alt-${i}-info`);
                 if (nameEl) nameEl.innerHTML = data[`alt_${i}_name`] || "";
                 if (infoEl) infoEl.innerHTML = data[`alt_${i}_info`] || "";
 
-                // 2. Kemaskini Kedudukan & Gaya (Alignment & Style)
+                // Kemaskini Warna & Variabel Gaya (Kekalkan fungsi asal)
+                root.style.setProperty(`--alt-${i}-name-color`, data[`alt_${i}_name_color`]);
+                root.style.setProperty(`--alt-${i}-info-color`, data[`alt_${i}_info_color`]);
+                root.style.setProperty(`--alt-${i}-style-color-1`, data[`alt_${i}_style_color_1`]);
+                root.style.setProperty(`--alt-${i}-style-color-2`, data[`alt_${i}_style_color_2`]);
+                
+                // Saiz individu jika ada
+                if (data[`alt_${i}_size`]){
+                    root.style.setProperty(`--alt-${i}-size`, data[`alt_${i}_size`] + "px");
+                }
+
+                // Kemaskini Kedudukan & Gaya
                 const ltContainer = document.getElementById(`lower-third-${i}`);
                 if (ltContainer) {
                     ltContainer.className = `alt ${data[`alt_${i}_align`]} style-${data[`alt_${i}_style`]}`;
                     
-                    // Jika data switch adalah false, pastikan ia ada kelas hide-anim asalnya
                     if (data[`alt_${i}_switch`] === "false" && !ltContainer.classList.contains('animation-out')) {
                         ltContainer.classList.add("hide-anim");
                     }
                 }
 
-                // 3. Kemaskini Warna & Saiz melalui CSS Variables
-                root.style.setProperty(`--alt-${i}-name-color`, data[`alt_${i}_name_color`]);
-                root.style.setProperty(`--alt-${i}-info-color`, data[`alt_${i}_info_color`]);
-                root.style.setProperty(`--alt-${i}-style-color-1`, data[`alt_${i}_style_color_1`]);
-                root.style.setProperty(`--alt-${i}-style-color-2`, data[`alt_${i}_style_color_2`]);
-                root.style.setProperty(`--alt-${i}-size`, (data[`alt_${i}_size`] || 24) + "px");
-
-                // 4. Logik Logo
+                // Logik Logo
                 const logoImg = document.getElementById(`alt-${i}-logo-image`);
                 const logoDiv = document.getElementById(`alt-${i}-logo`);
                 if (logoImg && logoDiv) {
@@ -130,7 +157,7 @@
                     }
                 }
 
-                // 5. Trigger Animasi Berdasarkan Switch Manual
+                // Trigger Animasi
                 if (data[`alt_${i}_switch`] === "true") {
                     animationIn(`lower-third-${i}`);
                 } else {
@@ -139,7 +166,7 @@
             }
         };
 
-        // Mendengar kemaskini Font dari Control Panel
+        // 2. MENDENGAR FONT DARI SALURAN KHAS (BCF - Kekalkan fungsi asal)
         bcf.onmessage = function (ev) {
             if (ev.data && ev.data.new_font_to_send) {
                 $('head').append('<style>' + ev.data.new_font_to_send + '</style>');
