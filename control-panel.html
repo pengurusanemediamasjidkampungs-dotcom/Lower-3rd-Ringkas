@@ -95,7 +95,7 @@
                 </div>
             </div>
 
-            <!-- Panel Customs (Logo & Font) -->
+            <!-- Panel Customs (Logo, Font, Animation & Loop) -->
             <div id="customs-panel" style="display:none; background:#1a1a1a; padding:15px; border-radius:4px; margin-top:10px; border:1px solid #333;">
                 <label style="font-size:9px; color:#888;">DEFAULT LOGO (PNG)</label>
                 <div class="logo-upload-container">
@@ -118,6 +118,37 @@
                     <div class="size-input-group">
                         <label>Global Size</label>
                         <input type="number" id="global-font-size" value="24" min="10" max="100" oninput="function_send()">
+                    </div>
+
+                    <!-- Animation Speed -->
+                    <div style="width: 80px;">
+                        <label style="font-size:9px; color:#888; text-transform:uppercase;">Anim Speed (s)</label>
+                        <input type="number" id="global-anim-speed" value="0.6" step="0.1" min="0.1" max="3" oninput="function_send()" style="width:100%; background:#000; color:#fff; border:1px solid #444; padding:5px; border-radius:3px; font-size:11px;">
+                    </div>
+                </div>
+
+                <!-- Auto Loop System -->
+                <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+                <div style="display: flex; gap: 10px; align-items: center; background: #222; padding: 10px; border-radius: 5px;">
+                    <div style="flex: 1;">
+                        <label style="font-size:9px; color:#888; text-transform:uppercase; display:block; margin-bottom:5px;">Auto Loop System</label>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <label class="switch">
+                                <input type="checkbox" id="global-loop-switch" onchange="function_send()">
+                                <span class="slider round"></span>
+                            </label>
+                            <span style="font-size:10px; color:#4CAF50;">AKTIFKAN LOOP</span>
+                        </div>
+                    </div>
+                    
+                    <div style="width: 70px;">
+                        <label style="font-size:9px; color:#888;">AKTIF (s)</label>
+                        <input type="number" id="loop-active-time" value="5" min="1" style="width:100%; background:#000; color:#fff; border:1px solid #444; padding:4px; border-radius:3px;" oninput="function_send()">
+                    </div>
+
+                    <div style="width: 70px;">
+                        <label style="font-size:9px; color:#888;">REHAT (s)</label>
+                        <input type="number" id="loop-idle-time" value="3" min="1" style="width:100%; background:#000; color:#fff; border:1px solid #444; padding:4px; border-radius:3px;" oninput="function_send()">
                     </div>
                 </div>
             </div>
@@ -226,7 +257,17 @@
             let master = $('#lower-thirds-masterswitch').is(':checked');
             let globalLogo = localStorage.getItem('global_logo_data');
             let customFont = localStorage.getItem('custom_font_data');
-            let fontSize = $('#global-font-size').val() || "24";
+            
+            // Loop & Anim Data
+            let loopEnabled = $('#global-loop-switch').is(':checked');
+            let activeTime = $('#loop-active-time').val() || "5";
+            let idleTime = $('#loop-idle-time').val() || "3";
+            let animSpeed = $('#global-anim-speed').val() || "0.6";
+
+            data[`global_loop`] = loopEnabled ? "true" : "false";
+            data[`loop_active_dur`] = activeTime * 1000; 
+            data[`loop_idle_dur`] = idleTime * 1000;
+            data[`anim_speed`] = animSpeed + "s";
             
             for(let i=1; i<=4; i++) {
                 let sw = $(`#lower-thirds-switch${i}`).is(':checked');
@@ -241,9 +282,9 @@
                 data[`alt_${i}_style`] = "1";
             }
 
-            // Hantar data Font secara global dalam objek yang sama
+            // Hantar data Font & Global tambahan
             data[`font_data`] = customFont || "";
-            data[`font_size`] = fontSize + "px";
+            data[`font_size`] = ($('#global-font-size').val() || "24") + "px";
 
             bc.postMessage(data);
             savePanelSettings();
@@ -255,9 +296,9 @@
             for (let i = 1; i <= 4; i++) {
                 let sw = $(`#lower-thirds-switch${i}`).is(':checked');
                 let config = $(`#alt-${i}-config-content`);
-                if (masterOn && sw) config.css('border-left', '5px solid #4CAF50'); // Hijau jika ON & Master ON
-                else if (sw) config.css('border-left', '5px solid #FF9800'); // Jingga jika ON tapi Master OFF
-                else config.css('border-left', '1px solid #333'); // Normal
+                if (masterOn && sw) config.css('border-left', '5px solid #4CAF50');
+                else if (sw) config.css('border-left', '5px solid #FF9800');
+                else config.css('border-left', '1px solid #333');
             }
         }
 
