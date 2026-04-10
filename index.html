@@ -1,99 +1,251 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - OBS Lower Thirds Manual</title>
+    <title>Master Dashboard - OBS Lower Thirds</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-blue: #2196F3;
+            --dark-bg: #0f0f0f;
+            --panel-bg: #1a1a1a;
+            --border-color: #333;
+            --text-color: #efefef;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            background-color: #121212;
-            color: white;
-            font-family: sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
         }
+
+        /* Header Styling */
         header {
-            background-color: #1a3a5a;
-            padding: 10px 20px;
-            text-align: center;
-            border-bottom: 2px solid #2196F3;
+            background-color: #162431;
+            padding: 12px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary-blue);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 10;
         }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-dot {
+            height: 12px;
+            width: 12px;
+            background-color: #ff4444;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Main Layout */
         .main-container {
             display: flex;
             flex: 1;
+            gap: 2px;
+            background-color: var(--border-color);
         }
+
+        /* Control Side (Kiri) */
         .panel-side {
-            width: 60%;
-            border-right: 2px solid #333;
+            width: 45%;
+            background-color: var(--panel-bg);
+            display: flex;
+            flex-direction: column;
+            min-width: 450px;
         }
+
+        /* Preview Side (Kanan) */
         .preview-side {
-            width: 40%;
+            width: 55%;
             background-color: #000;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
+
+        .preview-header {
+            background: #222;
+            padding: 8px 15px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #888;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+        }
+
+        .preview-container {
+            flex: 1;
+            position: relative;
+            background-image: 
+                linear-gradient(45deg, #111 25%, transparent 25%), 
+                linear-gradient(-45deg, #111 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #111 75%), 
+                linear-gradient(-45deg, transparent 75%, #111 75%);
+            background-size: 40px 40px;
+            background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+        }
+
         iframe {
             width: 100%;
             height: 100%;
             border: none;
         }
-        .preview-label {
-            background: #222;
-            padding: 5px;
-            text-align: center;
-            font-size: 12px;
-            color: #aaa;
-            text-transform: uppercase;
-        }
+
+        /* Floating Instructions */
         .instructions {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.8);
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(20, 20, 20, 0.9);
             padding: 15px;
             border-radius: 8px;
             font-size: 12px;
-            border: 1px solid #444;
-            max-width: 300px;
+            border-left: 4px solid var(--primary-blue);
+            max-width: 280px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            pointer-events: none;
+            transition: opacity 0.3s;
         }
-        h3 { margin-top: 0; color: #2196F3; }
-        ul { padding-left: 20px; }
-        li { margin-bottom: 5px; }
+
+        .instructions h3 { 
+            margin: 0 0 10px 0; 
+            color: var(--primary-blue);
+            font-size: 14px;
+        }
+
+        .instructions ul { 
+            padding-left: 18px; 
+            margin: 0; 
+            color: #ccc;
+        }
+
+        .instructions li { margin-bottom: 6px; }
+
+        /* Status Bar Bawah */
+        footer {
+            background: #111;
+            padding: 5px 20px;
+            font-size: 10px;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Responsif untuk skrin kecil */
+        @media (max-width: 1000px) {
+            .main-container { flex-direction: column; }
+            .panel-side, .preview-side { width: 100%; height: 50vh; }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <strong>OBS LOWER THIRDS - MANUAL DASHBOARD</strong>
+        <div class="logo-area">
+            <div class="logo-dot"></div>
+            <h1>Lower Thirds Controller <span style="color: #666; font-weight: normal;">| OBS Production Suite</span></h1>
+        </div>
+        <div id="connection-status" style="font-size: 11px; color: #4CAF50;">
+            ● SISTEM AKTIF
+        </div>
     </header>
 
     <div class="main-container">
-        <!-- Bahagian Control Panel -->
+        <!-- Panel Kawalan -->
         <div class="panel-side">
-            <iframe src="control-panel.html" title="Control Panel"></iframe>
+            <iframe id="frame-control" src="control-panel.html" title="Control Panel"></iframe>
         </div>
 
-        <!-- Bahagian Preview Source -->
+        <!-- Preview Live -->
         <div class="preview-side">
-            <div class="preview-label">Live Preview (Browser Source)</div>
-            <iframe src="browser-source.html" title="Browser Source Preview"></iframe>
+            <div class="preview-header">
+                <span>Output Live Preview (1920x1080)</span>
+                <span style="color: var(--primary-blue);">Source: browser-source.html</span>
+            </div>
+            <div class="preview-container">
+                <iframe id="frame-source" src="browser-source.html" title="Browser Source Preview"></iframe>
+            </div>
+
+            <!-- Kotak Panduan Ringkas -->
+            <div class="instructions" id="info-box">
+                <h3>Panduan Operasi</h3>
+                <ul>
+                    <li><strong>Aktifkan:</strong> Tekan "Master Switch" kemudian suis pada setiap slot Lower Third.</li>
+                    <li><strong>Simpan Data:</strong> Taip maklumat, kemudian <strong>tekan lama (1 saat)</strong> pada nombor slot (1-10).</li>
+                    <li><strong>Muat Data:</strong> Klik sekali pada slot yang berwarna biru.</li>
+                    <li><strong>OBS Setup:</strong> Gunakan `browser-source.html` sebagai 'Browser Source' dalam OBS anda.</li>
+                </ul>
+            </div>
         </div>
     </div>
 
-    <!-- Kotak Panduan Ringkas -->
-    <div class="instructions">
-        <h3>Panduan OBS</h3>
-        <ul>
-            <li><strong>Browser Source:</strong> Masukkan <code>browser-source.html</code> ke dalam OBS.</li>
-            <li><strong>Control Panel:</strong> Masukkan <code>control-panel.html</code> ke dalam <em>Docks > Custom Browser Docks</em>.</li>
-            <li><strong>Memory Slot:</strong> Taip nama, <strong>Tahan 1 saat</strong> pada kotak Slot untuk simpan. Klik sekali untuk muat semula.</li>
-            <li>Data tetap tersimpan walaupun OBS ditutup.</li>
-        </ul>
-    </div>
+    <footer>
+        <span>Local Broadcast Channel: Active</span>
+        <span>UI Engine: CSS3 & jQuery v3.6.0</span>
+    </footer>
 
+    <script>
+        /**
+         * PEMBAIKAN KOMUNIKASI (SINKRONISASI)
+         * Memandangkan nama BroadcastChannel dalam fail asal anda berbeza,
+         * skrip ini akan bertindak sebagai jambatan (bridge) supaya data 
+         * dari Control Panel sampai ke Source Preview dalam Dashboard ini.
+         */
+        
+        // Channel dari control-panel.html
+        const controlChannel = new BroadcastChannel('lower_thirds_channel');
+        
+        // Channel yang didengar oleh browser-source.html
+        const sourceChannel = new BroadcastChannel('obs-lower-thirds-channel');
+
+        // Apabila control-panel hantar data, kita hantar semula ke source channel
+        controlChannel.onmessage = (ev) => {
+            console.log("Dashboard Bridge: Menghantar data ke preview...", ev.data);
+            sourceChannel.postMessage(ev.data);
+        };
+
+        // Hilangkan info box selepas 10 saat untuk paparan bersih
+        setTimeout(() => {
+            const info = document.getElementById('info-box');
+            if(info) info.style.opacity = '0.3';
+        }, 10000);
+
+        // Auto-refresh preview jika berlaku ralat
+        window.addEventListener('error', function(e) {
+            console.log("Detecting iframe sync issue... refreshing.");
+            document.getElementById('frame-source').contentWindow.location.reload();
+        });
+    </script>
 </body>
 </html>
