@@ -3,11 +3,49 @@
 <head>
     <meta charset="utf-8">
     <title>LT Control Panel - Manual & Slots</title>
-    <!-- Pastikan path CSS ini betul mengikut struktur folder anda -->
     <link rel="stylesheet" href="common/css/style-control_panel.css">
     <script src="common/js/jquery.js"></script>
     <style>
-        /* Tambahan CSS ringkas untuk Slot */
+        /* Tambahan CSS untuk susunan baru */
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+        .input-row input[type="text"] {
+            flex: 1;
+            padding: 5px;
+            background: #333;
+            border: 1px solid #555;
+            color: white;
+            border-radius: 4px;
+        }
+        .btn-tool {
+            width: 28px;
+            height: 28px;
+            background: #444;
+            border: 1px solid #666;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-tool:hover { background: #555; }
+        .btn-tool.active { background: #2196F3; border-color: #fff; }
+
+        .color-picker {
+            width: 35px;
+            height: 28px;
+            border: none;
+            padding: 0;
+            background: none;
+            cursor: pointer;
+        }
+
         .memory-slots {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -31,14 +69,14 @@
             border-color: #2196F3;
         }
         .memory-slots li:active { background: #555; }
-        .stored-name { display: none; } /* Simpan data secara hidden */
+        .stored-name { display: none; }
     </style>
 </head>
 <body class="lower-thirds-panel">
 
     <div id="alt-panel">
-        <!-- Master Switch Section -->
-        <div id="alt-main-config-content" class="sortees" style="background: #1a3a5a; margin-bottom: 20px;">
+        <!-- Master Switch -->
+        <div id="alt-main-config-content" class="sortees" style="background: #1a3a5a; margin-bottom: 20px; padding: 10px; border-radius: 5px;">
             <div style="display: flex; align-items: center;">
                 <label class="switch">
                     <input type="checkbox" id="lower-thirds-masterswitch" class="checkbox-storable">
@@ -52,75 +90,49 @@
         <div id="lt-sections-container"></div>
     </div>
 
-    <!-- Template Section untuk LT -->
+    <!-- Template Section untuk LT (SUSUNAN BARU) -->
     <template id="lt-section-template">
-        <div class="sortees" id="alt-SECTION_ID-config-content">
-            <div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div class="sortees" id="alt-SECTION_ID-config-content" style="border-radius: 5px; margin-bottom: 15px; padding: 10px; border: 1px solid #444;">
+            
+            <div class="header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <div style="display: flex; align-items: center;">
                     <label class="switch">
-                        <input type="checkbox" id="lower-thirds-switchSECTION_ID" class="checkbox-storable">
+                        <input type="checkbox" id="lower-thirds-switchSECTION_ID" class="checkbox-storable lt-switch">
                         <span class="slider round"></span>
                     </label>
-                    <span style="margin-left: 10px; font-weight: bold;">LOWER THIRD SECTION_ID</span>
+                    <span style="margin-left: 10px; font-weight: bold; color: #ddd;">LOWER THIRD <span class="id-num">SECTION_ID</span></span>
                 </div>
-                <div class="drag-handle">:::</div>
+                <div class="drag-handle" style="cursor: grab; color: #666;">:::</div>
             </div>
 
-            <!-- Inputs Utama -->
-            <div class="input-group">
-                <input type="text" id="alt-SECTION_ID-name" class="storable" placeholder="Nama Utama">
-                <input type="text" id="alt-SECTION_ID-info" class="storable" placeholder="Info Tambahan">
+            <!-- Baris Nama: Input -> A -> B -> Color -->
+            <div class="input-row">
+                <input type="text" id="alt-SECTION_ID-name" class="storable" placeholder="Nama">
+                <button type="button" class="btn-tool btn-upper" title="Uppercase">A</button>
+                <button type="button" class="btn-tool btn-bold" title="Bold">B</button>
+                <input type="color" id="alt-SECTION_ID-name-color" class="storable color-picker" value="#ffffff">
             </div>
 
-            <!-- Tetapan Visual -->
-            <div class="grid-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                <div>
-                    <label>Style:</label>
-                    <select id="alt-SECTION_ID-style" class="storable" style="width: 100%;">
-                        <option value="1">Style 1 (Standard)</option>
-                        <option value="2">Style 2 (Modern)</option>
-                        <option value="3">Style 3 (Minimal)</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Alignment:</label>
-                    <div style="display: flex; gap: 5px;">
-                        <input type="radio" name="alt-SECTION_ID-align" id="alt-SECTION_ID-align-left" value="left" checked class="radio-storable"> L
-                        <input type="radio" name="alt-SECTION_ID-align" id="alt-SECTION_ID-align-center" value="center" class="radio-storable"> C
-                        <input type="radio" name="alt-SECTION_ID-align" id="alt-SECTION_ID-align-right" value="right" class="radio-storable"> R
-                    </div>
-                </div>
+            <!-- Baris Info: Input -> A -> B -> Color -->
+            <div class="input-row">
+                <input type="text" id="alt-SECTION_ID-info" class="storable" placeholder="Info">
+                <button type="button" class="btn-tool btn-upper" title="Uppercase">A</button>
+                <button type="button" class="btn-tool btn-bold" title="Bold">B</button>
+                <input type="color" id="alt-SECTION_ID-info-color" class="storable color-picker" value="#cccccc">
             </div>
 
-            <!-- Warna & Saiz -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px;">
-                <input type="color" id="alt-SECTION_ID-style-color-1" class="storable" value="#d54141" title="Warna Tema">
-                <input type="color" id="alt-SECTION_ID-style-color-2" class="storable" value="#222222" title="Warna Background">
-                <input type="number" id="alt-SECTION_ID-size" class="storable" value="24" title="Saiz Font">
+            <!-- Slot Memori -->
+            <div style="margin-top: 10px;">
+                <label style="font-size: 10px; color: #888; text-transform: uppercase;">Memory Slots</label>
+                <ul id="alt-SECTION_ID-memory-slots" class="memory-slots"></ul>
             </div>
-
-            <!-- Logo Switch & Preview -->
-            <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px;">
-                <label><input type="checkbox" id="alt-SECTION_ID-logo" class="checkbox-storable"> Guna Logo</label>
-                <img id="alt-SECTION_ID-logo-preview" src="../logos/logo_1.png" style="height: 30px; display: none;">
-            </div>
-
-            <hr style="border: 0.5px solid #444; margin: 15px 0;">
-
-            <!-- Slot Memori 1-10 -->
-            <label style="font-size: 11px; color: #aaa;">MEMORY SLOTS (Klik: Muat | Tahan 1s: Simpan)</label>
-            <ul id="alt-SECTION_ID-memory-slots" class="memory-slots">
-                <!-- Slot akan dibina oleh JS -->
-            </ul>
         </div>
     </template>
 
     <script>
-        // --- KONFIGURASI ASAS ---
         var bc = new BroadcastChannel('obs-lower-thirds-channel');
-        var bcf = new BroadcastChannel('obs-lower-thirds-fonts');
 
-        // --- BINA UI SECARA DINAMIK (4 SECTIONS) ---
+        // Bina UI 4 Section
         const container = $('#lt-sections-container');
         const template = $('#lt-section-template').html();
 
@@ -128,14 +140,13 @@
             let sectionHtml = template.replace(/SECTION_ID/g, i);
             container.append(sectionHtml);
 
-            // Bina 10 Slot untuk setiap section
             let slotList = $(`#alt-${i}-memory-slots`);
             for (let s = 1; s <= 10; s++) {
-                slotList.append(`<li id="alt-${i}-slot-${s}">Slot ${s}<div class="stored-name"></div></li>`);
+                slotList.append(`<li id="alt-${i}-slot-${s}">${s}<div class="stored-name"></div></li>`);
             }
         }
 
-        // --- 1. FUNGSI PENGHANTARAN DATA (MANUAL) ---
+        // Fungsi Hantar Data
         function function_send() {
             let dataToSend = {};
             let masterOn = document.getElementById("lower-thirds-masterswitch").checked;
@@ -146,15 +157,10 @@
                 dataToSend[`alt_${i}_switch`] = (masterOn && isSwitchOn) ? "true" : "false";
                 dataToSend[`alt_${i}_name`] = $(`#alt-${i}-name`).val();
                 dataToSend[`alt_${i}_info`] = $(`#alt-${i}-info`).val();
-                dataToSend[`alt_${i}_style`] = $(`#alt-${i}-style`).val();
-                dataToSend[`alt_${i}_align`] = $(`input[name=alt-${i}-align]:checked`).val();
-                dataToSend[`alt_${i}_size`] = $(`#alt-${i}-size`).val();
-                dataToSend[`alt_${i}_name_color`] = "#ffffff"; // Default putih
-                dataToSend[`alt_${i}_info_color`] = "#cccccc"; // Default kelabu
-                dataToSend[`alt_${i}_style_color_1`] = $(`#alt-${i}-style-color-1`).val();
-                dataToSend[`alt_${i}_style_color_2`] = $(`#alt-${i}-style-color-2`).val();
-                dataToSend[`alt_${i}_logo_switch`] = document.getElementById(`alt-${i}-logo`).checked ? "true" : "false";
-                dataToSend[`alt_${i}_logo_image`] = $(`#alt-${i}-logo-preview`).attr("src");
+                dataToSend[`alt_${i}_name_color`] = $(`#alt-${i}-name-color`).val();
+                dataToSend[`alt_${i}_info_color`] = $(`#alt-${i}-info-color`).val();
+                
+                // Tambahan: Logik untuk Uppercase/Bold boleh ditambah di sini jika perlu hantar ke overlay
             }
 
             bc.postMessage(dataToSend);
@@ -162,44 +168,35 @@
             saveCurrentSettings(); 
         }
 
-        // --- 2. FUNGSI KAWALAN UI SWITCH ---
         function checkSwitches() {
             let masterOn = document.getElementById("lower-thirds-masterswitch").checked;
-            
             for (let i = 1; i <= 4; i++) {
                 let sw = document.getElementById(`lower-thirds-switch${i}`);
                 let config = document.getElementById(`alt-${i}-config-content`);
-                
                 if (masterOn && sw.checked) {
-                    config.style.borderLeft = "5px solid #00ff00"; // Hijau jika ON
+                    config.style.borderLeft = "5px solid #00ff00";
                 } else if (sw.checked) {
-                    config.style.borderLeft = "5px solid #ffaa00"; // Jingga jika standby (Master OFF)
+                    config.style.borderLeft = "5px solid #ffaa00";
                 } else {
                     config.style.borderLeft = "1px solid #444";
                 }
             }
         }
 
-        // --- 3. SISTEM MEMORY SLOT (SIMPAN & MUAT) ---
-        function saveToSlot(slotId, name, info, logo) {
+        // Memory Slot Logic (Ringkas)
+        function saveToSlot(slotId, name, info) {
             localStorage.setItem(slotId + "_name", name);
             localStorage.setItem(slotId + "_info", info);
-            localStorage.setItem(slotId + "_logo", logo);
             refreshSlotUI(); 
         }
 
         function loadFromSlot(slotId) {
             const savedName = localStorage.getItem(slotId + "_name");
             const savedInfo = localStorage.getItem(slotId + "_info");
-            const savedLogo = localStorage.getItem(slotId + "_logo");
-
             if (savedName !== null) {
                 let altNum = slotId.split('-')[1]; 
                 $(`#alt-${altNum}-name`).val(savedName);
                 $(`#alt-${altNum}-info`).val(savedInfo);
-                if(savedLogo && savedLogo !== "undefined") {
-                    $(`#alt-${altNum}-logo-preview`).attr("src", savedLogo);
-                }
                 function_send(); 
             }
         }
@@ -209,86 +206,58 @@
                 let slotId = $(this).attr('id');
                 if (localStorage.getItem(slotId + "_name")) {
                     $(this).addClass("stored");
-                    let name = localStorage.getItem(slotId + "_name");
-                    $(this).find(".stored-name").text(name);
                 } else {
                     $(this).removeClass("stored");
                 }
             });
         }
 
-        // --- 4. LOGIK KLIK SLOT (MUAT & TEKAN LAMA UNTUK SIMPAN) ---
+        // Event Click Slots
         $(document).on('mousedown', "[id^=alt-][id*=-slot-]", function(e) {
             let slotId = $(this).attr('id');
             let altNum = slotId.split('-')[1];
-
-            this.isLongPress = false;
             this.downTimer = setTimeout(() => {
-                let currentName = $(`#alt-${altNum}-name`).val();
-                let currentInfo = $(`#alt-${altNum}-info`).val();
-                let currentLogo = $(`#alt-${altNum}-logo-preview`).attr("src");
-
-                if(currentName.trim() !== "") {
-                    saveToSlot(slotId, currentName, currentInfo, currentLogo);
-                    alert("Disimpan!");
-                }
+                saveToSlot(slotId, $(`#alt-${altNum}-name`).val(), $(`#alt-${altNum}-info`).val());
                 this.isLongPress = true;
             }, 1000); 
         }).on('mouseup mouseleave', "[id^=alt-][id*=-slot-]", function() {
             clearTimeout(this.downTimer);
         }).on('click', "[id^=alt-][id*=-slot-]", function() {
-            if (!this.isLongPress) {
-                loadFromSlot($(this).attr('id'));
-            }
+            if (!this.isLongPress) loadFromSlot($(this).attr('id'));
+            this.isLongPress = false;
         });
 
-        // --- 5. PENGURUSAN DATA SEMASA (TETAPAN PANEL) ---
+        // Simpan & Muat Tetapan Panel
         function saveCurrentSettings() {
-            $('input, select').each(function() {
+            $('input').each(function() {
                 let id = $(this).attr('id');
                 if (!id) return;
-                if ($(this).attr('type') === 'checkbox') {
-                    localStorage.setItem("settings_" + id, $(this).is(':checked'));
-                } else if ($(this).attr('type') === 'radio') {
-                    if($(this).is(':checked')) localStorage.setItem("settings_" + $(this).attr('name'), $(this).val());
-                } else {
-                    localStorage.setItem("settings_" + id, $(this).val());
-                }
+                localStorage.setItem("settings_" + id, $(this).attr('type') === 'checkbox' ? $(this).is(':checked') : $(this).val());
             });
         }
 
         function loadCurrentSettings() {
-            $('input, select').each(function() {
+            $('input').each(function() {
                 let id = $(this).attr('id');
-                if (!id) return;
                 let savedVal = localStorage.getItem("settings_" + id);
-                
                 if (savedVal !== null) {
-                    if ($(this).attr('type') === 'checkbox') {
-                        $(this).prop('checked', savedVal === 'true');
-                    } else {
-                        $(this).val(savedVal);
-                    }
+                    if ($(this).attr('type') === 'checkbox') $(this).prop('checked', savedVal === 'true');
+                    else $(this).val(savedVal);
                 }
             });
-            
-            // Load Radio Buttons
-            for(let i=1; i<=4; i++) {
-                let radioVal = localStorage.getItem(`settings_alt-${i}-align`);
-                if(radioVal) $(`input[name=alt-${i}-align][value=${radioVal}]`).prop('checked', true);
-            }
-
             refreshSlotUI();
             checkSwitches();
         }
 
-        // --- 6. EVENT LISTENERS ---
         $(document).ready(function() {
             loadCurrentSettings();
-
-            // Kirim data setiap kali ada perubahan input
-            $(document).on('change input', 'input, select', function() {
+            $(document).on('change input', 'input', function() {
                 function_send();
+            });
+
+            // Toggle Button Visual
+            $('.btn-tool').click(function() {
+                $(this).toggleClass('active');
             });
         });
     </script>
