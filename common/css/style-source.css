@@ -1,26 +1,57 @@
-/* style-source.css - Gaya Modern Rounded (Inspirasi Gambar 2) */
+/* style-source.css - Gaya Modern Rounded Pro (Google Sans Edition) */
+
+/* 1. IMPORT GOOGLE SANS */
+@font-face {
+    font-family: 'Google Sans';
+    src: local('Google Sans Regular'), local('Google Sans'), 
+         url('https://fonts.gstatic.com/s/googlesans/v14/4UaGrENHsxJlGDuGo1OIlL3Kwp5eKQtGBlc.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
 
 :root {
+    /* Warna Asas */
     --bg-box: rgba(20, 20, 20, 0.95); /* Hitam kelabu sangat gelap */
     --accent-line: #f44336;           /* Garisan merah sebelah logo */
     --text-white: #ffffff;
     --text-yellow: #ffeb3b;           /* Warna kuning untuk info */
+    
+    /* Animasi & Transisi */
     --animation-speed: 0.6s;
     --cubic-bezier: cubic-bezier(0.16, 1, 0.3, 1);
     
-    /* Variable dinamik dari Control Panel */
+    /* Variable Dinamik (Diterima dari Control Panel) */
+    --global-font-size: 24px; 
+    
+    /* Warna Custom Slot 1 */
     --alt-1-name-color: #ffffff;
     --alt-1-info-color: #ffeb3b;
+    
+    /* Warna Custom Slot 2 */
+    --alt-2-name-color: #ffffff;
+    --alt-2-info-color: #ffeb3b;
+    
+    /* Warna Custom Slot 3 */
+    --alt-3-name-color: #ffffff;
+    --alt-3-info-color: #ffeb3b;
+    
+    /* Warna Custom Slot 4 */
+    --alt-4-name-color: #ffffff;
+    --alt-4-info-color: #ffeb3b;
 }
 
+/* 2. TETAPAN ASAS BODY */
 body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    /* Menggunakan Google Sans dengan fallback font standard */
+    font-family: 'Google Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Bekas Utama (Container) */
+/* 3. BEKAS UTAMA (CONTAINER) */
 .alt {
     position: absolute;
     bottom: 8%; /* Kedudukan dari bawah skrin */
@@ -28,14 +59,14 @@ body {
     display: flex;
     align-items: center;
     
-    /* Gaya Kotak (Design Gambar 2) */
+    /* Gaya Kotak Modern */
     background: var(--bg-box);
     padding: 12px 25px;
-    border-radius: 12px; /* Sudut bulat lebih ketara */
+    border-radius: 12px; /* Sudut bulat ketara */
     border: 1px solid #333;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     
-    /* Status Asal (Hidden) */
+    /* Status Asal (Tersembunyi untuk Animasi) */
     visibility: hidden;
     opacity: 0;
     transition: all var(--animation-speed) var(--cubic-bezier);
@@ -43,14 +74,13 @@ body {
     backdrop-filter: blur(8px); /* Kesan kaca lembut */
 }
 
-/* Animasi Masuk */
+/* 4. SISTEM ANIMASI (IN/OUT) */
 .animation-in {
     visibility: visible;
     opacity: 1;
     transform: translateX(0);
 }
 
-/* Animasi Keluar */
 .animation-out {
     opacity: 0;
     transform: translateX(-20px);
@@ -61,18 +91,18 @@ body {
     display: none;
 }
 
-/* Bahagian Logo */
+/* 5. BAHAGIAN LOGO */
 .logo {
     display: flex;
     align-items: center;
     margin-right: 18px;
     padding-right: 18px;
-    /* Garisan Pemisah (Merah) */
+    /* Garisan Pemisah Merah */
     border-right: 3px solid var(--accent-line);
 }
 
 .logo img {
-    height: 55px; /* Saiz logo yang seimbang */
+    height: 55px; /* Saiz logo seimbang */
     width: auto;
     filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
 }
@@ -81,7 +111,7 @@ body {
     display: none;
 }
 
-/* Bahagian Teks */
+/* 6. BAHAGIAN TEKS & SAIZ DINAMIK */
 .text-content {
     display: flex;
     flex-direction: column;
@@ -91,8 +121,8 @@ body {
 /* Tajuk Utama (Nama) */
 [id*="-name"] {
     color: var(--text-white);
-    font-size: 24px;
-    font-weight: 800;
+    font-size: var(--global-font-size); /* Saiz dinamik */
+    font-weight: 500; /* Medium weight (Ciri khas Google Sans) */
     margin: 0;
     padding: 0;
     text-transform: uppercase;
@@ -104,23 +134,27 @@ body {
 /* Tajuk Kecil (Info) */
 [id*="-info"] {
     color: var(--text-yellow);
-    font-size: 16px;
-    font-weight: 500;
+    /* Saiz info adalah 70% daripada saiz nama secara automatik */
+    font-size: calc(var(--global-font-size) * 0.7);
+    font-weight: 400; /* Regular weight */
     margin-top: 4px;
     letter-spacing: 0.2px;
 }
 
-/* Custom colors dari Control Panel (Jika ada) */
+/* 7. PENGURUSAN WARNA SLOT (OVERRIDE) */
 #alt-1-name { color: var(--alt-1-name-color); }
 #alt-1-info { color: var(--alt-1-info-color); }
+
 #alt-2-name { color: var(--alt-2-name-color); }
 #alt-2-info { color: var(--alt-2-info-color); }
+
 #alt-3-name { color: var(--alt-3-name-color); }
 #alt-3-info { color: var(--alt-3-info-color); }
+
 #alt-4-name { color: var(--alt-4-name-color); }
 #alt-4-info { color: var(--alt-4-info-color); }
 
-/* Support untuk Layout Kanan (Jika perlu di masa depan) */
+/* 8. SOKONGAN LAYOUT KANAN (RIGHT ALIGN) */
 .alt.right {
     left: auto;
     right: 5%;
@@ -134,4 +168,16 @@ body {
     padding-left: 18px;
     border-right: none;
     border-left: 3px solid var(--accent-line);
+}
+
+.alt.right {
+    transform: translateX(50px); /* Masuk dari kanan */
+}
+
+.alt.right.animation-in {
+    transform: translateX(0);
+}
+
+.alt.right.animation-out {
+    transform: translateX(20px);
 }
