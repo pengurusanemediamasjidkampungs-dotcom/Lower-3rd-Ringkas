@@ -72,20 +72,22 @@
             flex: 1;
             gap: 2px;
             background-color: var(--border-color);
+            overflow: hidden;
         }
 
-        /* Control Side (Kiri) */
+        /* Control Side (Kiri) - Diberi scroll jika content panjang */
         .panel-side {
-            width: 45%;
+            width: 40%;
             background-color: var(--panel-bg);
             display: flex;
             flex-direction: column;
-            min-width: 450px;
+            min-width: 400px;
+            overflow: hidden;
         }
 
         /* Preview Side (Kanan) */
         .preview-side {
-            width: 55%;
+            width: 60%;
             background-color: #000;
             display: flex;
             flex-direction: column;
@@ -107,6 +109,7 @@
         .preview-container {
             flex: 1;
             position: relative;
+            /* Corak Checkerboard untuk simulasi transparensi */
             background-image: 
                 linear-gradient(45deg, #111 25%, transparent 25%), 
                 linear-gradient(-45deg, #111 25%, transparent 25%), 
@@ -130,29 +133,19 @@
             background: rgba(20, 20, 20, 0.9);
             padding: 15px;
             border-radius: 8px;
-            font-size: 12px;
+            font-size: 11px;
             border-left: 4px solid var(--primary-blue);
-            max-width: 280px;
+            max-width: 250px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             pointer-events: none;
-            transition: opacity 0.3s;
+            transition: opacity 0.5s;
+            z-index: 100;
         }
 
-        .instructions h3 { 
-            margin: 0 0 10px 0; 
-            color: var(--primary-blue);
-            font-size: 14px;
-        }
+        .instructions h3 { margin: 0 0 8px 0; color: var(--primary-blue); font-size: 13px; }
+        .instructions ul { padding-left: 15px; margin: 0; color: #ccc; }
+        .instructions li { margin-bottom: 4px; }
 
-        .instructions ul { 
-            padding-left: 18px; 
-            margin: 0; 
-            color: #ccc;
-        }
-
-        .instructions li { margin-bottom: 6px; }
-
-        /* Status Bar Bawah */
         footer {
             background: #111;
             padding: 5px 20px;
@@ -162,7 +155,6 @@
             justify-content: space-between;
         }
 
-        /* Responsif untuk skrin kecil */
         @media (max-width: 1000px) {
             .main-container { flex-direction: column; }
             .panel-side, .preview-side { width: 100%; height: 50vh; }
@@ -177,75 +169,80 @@
             <h1>Lower Thirds Controller <span style="color: #666; font-weight: normal;">| OBS Production Suite</span></h1>
         </div>
         <div id="connection-status" style="font-size: 11px; color: #4CAF50;">
-            ● SISTEM AKTIF
+            ● SISTEM HUBUNGAN AKTIF
         </div>
     </header>
 
     <div class="main-container">
-        <!-- Panel Kawalan -->
+        <!-- Panel Kawalan Kiri -->
         <div class="panel-side">
+            <!-- Source ke control-panel.html -->
             <iframe id="frame-control" src="control-panel.html" title="Control Panel"></iframe>
         </div>
 
-        <!-- Preview Live -->
+        <!-- Preview Kanan -->
         <div class="preview-side">
             <div class="preview-header">
-                <span>Output Live Preview (1920x1080)</span>
-                <span style="color: var(--primary-blue);">Source: browser-source.html</span>
+                <span>Output Live Preview (Simulasi OBS)</span>
+                <span id="sync-indicator" style="color: #888;">SYNC: OK</span>
             </div>
             <div class="preview-container">
+                <!-- Source ke browser-source.html -->
                 <iframe id="frame-source" src="browser-source.html" title="Browser Source Preview"></iframe>
             </div>
 
-            <!-- Kotak Panduan Ringkas -->
             <div class="instructions" id="info-box">
-                <h3>Panduan Operasi</h3>
+                <h3>Panduan Dashboard</h3>
                 <ul>
-                    <li><strong>Aktifkan:</strong> Tekan "Master Switch" kemudian suis pada setiap slot Lower Third.</li>
-                    <li><strong>Simpan Data:</strong> Taip maklumat, kemudian <strong>tekan lama (1 saat)</strong> pada nombor slot (1-10).</li>
-                    <li><strong>Muat Data:</strong> Klik sekali pada slot yang berwarna biru.</li>
-                    <li><strong>OBS Setup:</strong> Gunakan `browser-source.html` sebagai 'Browser Source' dalam OBS anda.</li>
+                    <li><strong>Logo:</strong> Klik butang 'Customs' di kiri atas untuk muat naik PNG.</li>
+                    <li><strong>Tambah/Tolak:</strong> Gunakan butang (+) untuk kembangkan setting setiap LT.</li>
+                    <li><strong>Memori:</strong> Tahan 1 saat pada kotak nombor untuk simpan teks.</li>
                 </ul>
             </div>
         </div>
     </div>
 
     <footer>
-        <span>Local Broadcast Channel: Active</span>
-        <span>UI Engine: CSS3 & jQuery v3.6.0</span>
+        <span>Broadcast Channel: obs-lower-thirds-channel</span>
+        <span>Status: Connected to LocalStorage</span>
     </footer>
 
     <script>
-        /**
-         * PEMBAIKAN KOMUNIKASI (SINKRONISASI)
-         * Memandangkan nama BroadcastChannel dalam fail asal anda berbeza,
-         * skrip ini akan bertindak sebagai jambatan (bridge) supaya data 
-         * dari Control Panel sampai ke Source Preview dalam Dashboard ini.
+        /** 
+         * DASHBOARD LOGIC
+         * Kita tidak perlukan 'bridge' lagi kerana control-panel.html yang baru 
+         * sudah menghantar data terus ke 'obs-lower-thirds-channel' 
+         * yang sama dengan browser-source.html.
          */
-        
-        // Channel dari control-panel.html
-        const controlChannel = new BroadcastChannel('lower_thirds_channel');
-        
-        // Channel yang didengar oleh browser-source.html
-        const sourceChannel = new BroadcastChannel('obs-lower-thirds-channel');
 
-        // Apabila control-panel hantar data, kita hantar semula ke source channel
-        controlChannel.onmessage = (ev) => {
-            console.log("Dashboard Bridge: Menghantar data ke preview...", ev.data);
-            sourceChannel.postMessage(ev.data);
+        const channelName = 'obs-lower-thirds-channel';
+        const bc = new BroadcastChannel(channelName);
+
+        // Debugging: Lihat data yang lalu lalang di Dashboard
+        bc.onmessage = (ev) => {
+            console.log("Dashboard Monitoring:", ev.data);
+            
+            // Visual feedback pada preview header
+            const sync = document.getElementById('sync-indicator');
+            sync.style.color = '#4CAF50';
+            sync.innerText = 'SYNC: DATA RECEIVED';
+            
+            setTimeout(() => {
+                sync.style.color = '#888';
+                sync.innerText = 'SYNC: OK';
+            }, 1000);
         };
 
-        // Hilangkan info box selepas 10 saat untuk paparan bersih
+        // Sorok panduan selepas 15 saat
         setTimeout(() => {
             const info = document.getElementById('info-box');
-            if(info) info.style.opacity = '0.3';
-        }, 10000);
+            if(info) info.style.opacity = '0.2';
+        }, 15000);
 
-        // Auto-refresh preview jika berlaku ralat
-        window.addEventListener('error', function(e) {
-            console.log("Detecting iframe sync issue... refreshing.");
-            document.getElementById('frame-source').contentWindow.location.reload();
-        });
+        // Jika iframe gagal load
+        document.getElementById('frame-control').onerror = function() {
+            console.error("Gagal memuatkan control-panel.html. Pastikan nama fail betul.");
+        };
     </script>
 </body>
 </html>
