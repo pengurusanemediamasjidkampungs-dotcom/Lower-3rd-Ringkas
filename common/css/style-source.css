@@ -1,32 +1,46 @@
-/* style-source.css - Gaya Emas/Hitam Premium */
+/* style-source.css - Gaya Modern Rounded (Inspirasi Gambar 2) */
 
 :root {
-    --gold-primary: #d4af37;
-    --black-bg: rgba(0, 0, 0, 0.85);
-    --black-bg-light: rgba(0, 0, 0, 0.6);
+    --bg-box: rgba(20, 20, 20, 0.95); /* Hitam kelabu sangat gelap */
+    --accent-line: #f44336;           /* Garisan merah sebelah logo */
     --text-white: #ffffff;
+    --text-yellow: #ffeb3b;           /* Warna kuning untuk info */
     --animation-speed: 0.6s;
     --cubic-bezier: cubic-bezier(0.16, 1, 0.3, 1);
+    
+    /* Variable dinamik dari Control Panel */
+    --alt-1-name-color: #ffffff;
+    --alt-1-info-color: #ffeb3b;
 }
 
 body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Bekas Utama */
+/* Bekas Utama (Container) */
 .alt {
     position: absolute;
-    bottom: 8%; /* Kedudukan mengikut gaya premium */
-    left: 5%;
+    bottom: 8%; /* Kedudukan dari bawah skrin */
+    left: 5%;   /* Kedudukan dari kiri skrin */
     display: flex;
     align-items: center;
+    
+    /* Gaya Kotak (Design Gambar 2) */
+    background: var(--bg-box);
+    padding: 12px 25px;
+    border-radius: 12px; /* Sudut bulat lebih ketara */
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    
+    /* Status Asal (Hidden) */
     visibility: hidden;
     opacity: 0;
     transition: all var(--animation-speed) var(--cubic-bezier);
     transform: translateX(-50px);
+    backdrop-filter: blur(8px); /* Kesan kaca lembut */
 }
 
 /* Animasi Masuk */
@@ -47,44 +61,77 @@ body {
     display: none;
 }
 
-/* Reka Bentuk Grafik (Kandungan Teks) */
-.text-content {
-    background: linear-gradient(90deg, var(--black-bg) 0%, var(--black-bg-light) 100%);
-    border-left: 5px solid var(--gold-primary); /* Garisan Emas Kiri */
-    border-top: 1px solid rgba(212, 175, 55, 0.3); /* Garisan Halus Atas */
-    padding: 8px 30px;
-    min-width: 300px;
-    backdrop-filter: blur(5px); /* Kesan Kaca */
-    box-shadow: 10px 10px 20px rgba(0,0,0,0.4);
+/* Bahagian Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    margin-right: 18px;
+    padding-right: 18px;
+    /* Garisan Pemisah (Merah) */
+    border-right: 3px solid var(--accent-line);
 }
 
-/* Nama (Tajuk Utama) */
-#alt-1-name, #alt-2-name, #alt-3-name, #alt-4-name {
-    color: var(--text-white);
-    font-size: 26px;
-    font-weight: 700;
-    margin: 0;
-    text-transform: uppercase;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    letter-spacing: 1px;
-}
-
-/* Info (Tajuk Kecil) */
-#alt-1-info, #alt-2-info, #alt-3-info, #alt-4-info {
-    color: var(--gold-primary); /* Teks Warna Emas */
-    font-size: 16px;
-    font-weight: 400;
-    margin-top: -2px;
-    letter-spacing: 0.5px;
-}
-
-/* Logo (Jika Ada) */
 .logo img {
-    height: 70px;
-    margin-right: 20px;
-    filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.5));
+    height: 55px; /* Saiz logo yang seimbang */
+    width: auto;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
 }
 
 .no-logo {
     display: none;
+}
+
+/* Bahagian Teks */
+.text-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Tajuk Utama (Nama) */
+[id*="-name"] {
+    color: var(--text-white);
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    padding: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Tajuk Kecil (Info) */
+[id*="-info"] {
+    color: var(--text-yellow);
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 4px;
+    letter-spacing: 0.2px;
+}
+
+/* Custom colors dari Control Panel (Jika ada) */
+#alt-1-name { color: var(--alt-1-name-color); }
+#alt-1-info { color: var(--alt-1-info-color); }
+#alt-2-name { color: var(--alt-2-name-color); }
+#alt-2-info { color: var(--alt-2-info-color); }
+#alt-3-name { color: var(--alt-3-name-color); }
+#alt-3-info { color: var(--alt-3-info-color); }
+#alt-4-name { color: var(--alt-4-name-color); }
+#alt-4-info { color: var(--alt-4-info-color); }
+
+/* Support untuk Layout Kanan (Jika perlu di masa depan) */
+.alt.right {
+    left: auto;
+    right: 5%;
+    flex-direction: row-reverse;
+}
+
+.alt.right .logo {
+    margin-right: 0;
+    margin-left: 18px;
+    padding-right: 0;
+    padding-left: 18px;
+    border-right: none;
+    border-left: 3px solid var(--accent-line);
 }
