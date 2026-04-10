@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LT Control Panel - Pro Edition</title>
+    <title>LT Control Panel - Pro Edition (Updated)</title>
     <link rel="stylesheet" href="common/css/style-control_panel.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body { padding: 10px; background: #1a1a1a; color: #fff; font-family: sans-serif; }
+        body { padding: 10px; background: #1a1a1a; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         /* Main Settings Style */
         #main-settings {
@@ -55,7 +55,7 @@
         .memory-slots li.active { background: #2196F3; color: white; }
 
         /* Sortees/Section Style */
-        .sortees { background: #252525; border: 1px solid #333; border-radius: 5px; margin-bottom: 10px; padding: 10px; transition: 0.3s; }
+        .sortees { background: #252525; border: 1px solid #333; border-radius: 5px; margin-bottom: 10px; padding: 10px; transition: 0.3s; border-left: 1px solid #333; }
         .section-body { margin-top: 10px; }
 
         /* Switch Toggle */
@@ -65,6 +65,17 @@
         .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #4CAF50; }
         input:checked + .slider:before { transform: translateX(16px); }
+
+        /* Style Baru untuk Font Settings */
+        .custom-font-row {
+            display: flex; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;
+        }
+        .font-input-group { flex: 1; }
+        .size-input-group { width: 80px; }
+        .custom-font-row label { font-size: 9px; color: #888; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .custom-font-row input[type="number"] {
+            width: 100%; background: #000; color: #fff; border: 1px solid #444; padding: 5px; border-radius: 3px; font-size: 11px;
+        }
     </style>
 </head>
 <body>
@@ -84,13 +95,29 @@
                 </div>
             </div>
 
-            <div id="customs-panel" style="display:none; background:#1a1a1a; padding:10px; border-radius:4px; margin-top:10px;">
-                <label style="font-size:9px; color:#888;">DEFAULT LOGO (CLICK BOX TO UPLOAD)</label>
+            <!-- Panel Customs (Logo & Font) -->
+            <div id="customs-panel" style="display:none; background:#1a1a1a; padding:15px; border-radius:4px; margin-top:10px; border:1px solid #333;">
+                <label style="font-size:9px; color:#888;">DEFAULT LOGO (PNG)</label>
                 <div class="logo-upload-container">
                     <div class="logo-upload-slot" onclick="document.getElementById('file-global').click()">
                         <img id="preview-global" style="display:none;">
                         <span id="label-global">+</span>
                         <input type="file" id="file-global" hidden accept="image/*" onchange="uploadLogo(this)">
+                    </div>
+                </div>
+
+                <div class="custom-font-row">
+                    <!-- Muat Naik Font -->
+                    <div class="font-input-group">
+                        <label>Upload Font (.ttf, .otf)</label>
+                        <input type="file" id="font-file" accept=".ttf,.otf,.woff,.woff2" style="font-size:10px; color: #ccc;" onchange="uploadFont(this)">
+                        <div id="font-status" style="font-size:9px; color:#4CAF50; margin-top:4px;">No custom font loaded.</div>
+                    </div>
+
+                    <!-- Saiz Font Global -->
+                    <div class="size-input-group">
+                        <label>Global Size</label>
+                        <input type="number" id="global-font-size" value="24" min="10" max="100" oninput="function_send()">
                     </div>
                 </div>
             </div>
@@ -135,25 +162,38 @@
     </template>
 
     <script>
-        // Gunakan nama channel yang sama dengan browser-source
         const bc = new BroadcastChannel('obs-lower-thirds-channel');
 
-        // 1. Bina UI Automatik
+        // 1. Bina UI Automatik (4 Sections & 10 Slots)
         const container = $('#lt-sections-container');
         const template = $('#lt-section-template').html();
 
         for (let i = 1; i <= 4; i++) {
             let sectionHtml = template.replace(/SECTION_ID/g, i);
             container.append(sectionHtml);
-
-            // Tambah 10 slot memori
             let slotList = $(`#alt-${i}-memory-slots`);
             for (let s = 1; s <= 10; s++) {
                 slotList.append(`<li id="alt-${i}-slot-${s}">${s}</li>`);
             }
         }
 
-        // 2. Logik Muat Naik Logo
+        // 2. FUNGSI MUAT NAIK FONT
+        function uploadFont(input) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    const fontData = e.target.result;
+                    const fileName = input.files[0].name;
+                    localStorage.setItem('custom_font_data', fontData);
+                    localStorage.setItem('custom_font_name', fileName);
+                    $('#font-status').text('Font: ' + fileName + ' (Loaded)');
+                    function_send(); 
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 3. LOGIK MUAT NAIK LOGO
         function uploadLogo(input) {
             if (input.files && input.files[0]) {
                 let reader = new FileReader();
@@ -173,18 +213,20 @@
             if(logo) $('.mini-logo-img').attr('src', logo);
         }
 
-        // 3. Butang Tambah/Tolak (+)
+        // 4. BUTANG TAMBAH/TOLAK (+) - Collapse/Expand
         $(document).on('click', '.btn-plus', function() {
             let body = $(this).closest('.sortees').find('.section-body');
             body.slideToggle(200);
             $(this).text($(this).text() === '+' ? '-' : '+');
         });
 
-        // 4. Fungsi Hantar Data
+        // 5. FUNGSI UTAMA HANTAR DATA KE BROADCAST CHANNEL
         function function_send() {
             let data = {};
             let master = $('#lower-thirds-masterswitch').is(':checked');
             let globalLogo = localStorage.getItem('global_logo_data');
+            let customFont = localStorage.getItem('custom_font_data');
+            let fontSize = $('#global-font-size').val() || "24";
             
             for(let i=1; i<=4; i++) {
                 let sw = $(`#lower-thirds-switch${i}`).is(':checked');
@@ -198,6 +240,11 @@
                 data[`alt_${i}_align`] = "left";
                 data[`alt_${i}_style`] = "1";
             }
+
+            // Hantar data Font secara global dalam objek yang sama
+            data[`font_data`] = customFont || "";
+            data[`font_size`] = fontSize + "px";
+
             bc.postMessage(data);
             savePanelSettings();
             checkSwitchesVisual();
@@ -208,13 +255,13 @@
             for (let i = 1; i <= 4; i++) {
                 let sw = $(`#lower-thirds-switch${i}`).is(':checked');
                 let config = $(`#alt-${i}-config-content`);
-                if (masterOn && sw) config.css('border-left', '5px solid #4CAF50');
-                else if (sw) config.css('border-left', '5px solid #FF9800');
-                else config.css('border-left', '1px solid #333');
+                if (masterOn && sw) config.css('border-left', '5px solid #4CAF50'); // Hijau jika ON & Master ON
+                else if (sw) config.css('border-left', '5px solid #FF9800'); // Jingga jika ON tapi Master OFF
+                else config.css('border-left', '1px solid #333'); // Normal
             }
         }
 
-        // 5. Logik Memori (Tahan 1s Simpan / Klik Muat)
+        // 6. LOGIK MEMORI (LONG PRESS SIMPAN / KLIK LOAD)
         $(document).on('mousedown', '[id*=-slot-]', function() {
             let slotId = $(this).attr('id');
             let altNum = slotId.split('-')[1];
@@ -233,7 +280,7 @@
             let altNum = slotId.split('-')[1];
             let n = localStorage.getItem(slotId + '_name');
             let f = localStorage.getItem(slotId + '_info');
-            if(n) {
+            if(n !== null) {
                 $(`#alt-${altNum}-name`).val(n);
                 $(`#alt-${altNum}-info`).val(f);
                 $(`[id^=alt-${altNum}-slot-]`).removeClass('active');
@@ -242,11 +289,11 @@
             }
         });
 
-        // 6. Auto-Save Panel
+        // 7. AUTO-SAVE & LOAD SETTINGS
         function savePanelSettings() {
             $('input').each(function() {
                 let id = $(this).attr('id');
-                if(id) {
+                if(id && id !== 'font-file' && id !== 'file-global') { 
                     let val = $(this).attr('type') === 'checkbox' ? $(this).is(':checked') : $(this).val();
                     localStorage.setItem("p_" + id, val);
                 }
@@ -271,7 +318,11 @@
                 updateMiniPreviews();
             }
 
-            // Load Stored Memory UI
+            // Load Font Status
+            let savedFontName = localStorage.getItem('custom_font_name');
+            if(savedFontName) $('#font-status').text('Font: ' + savedFontName + ' (Loaded)');
+
+            // Load Memory Slots Visual
             $('[id*=-slot-]').each(function() {
                 if (localStorage.getItem($(this).attr('id') + '_name')) $(this).addClass('stored');
             });
@@ -281,7 +332,10 @@
 
         $(document).ready(function() {
             loadPanelSettings();
+            
+            // Event Listeners
             $(document).on('change input', 'input', function() { function_send(); });
+
             $('.btn-upper').click(function() {
                 let inp = $(this).siblings('input[type="text"]');
                 inp.val(inp.val().toUpperCase());
