@@ -1,4 +1,4 @@
-/* style-source.css - Optimized Premium Final */
+/* style-source.css - Professional Premium Lower Thirds */
 
 @font-face {
     font-family: 'Google Sans';
@@ -8,82 +8,179 @@
 }
 
 :root {
+    /* Default Values (Akan di-override oleh JS) */
     --bg-box: rgba(15, 15, 15, 0.96);
-    --accent-line: #f44336;
     --global-font-size: 24px;
-    --anim-speed: 0.8s;
+    --anim-speed: 0.6s;
     --cubic: cubic-bezier(0.16, 1, 0.3, 1);
+    
+    /* Default Colors jika JS belum hantar data */
+    --alt-1-name-color: #ffffff; --alt-1-info-color: #ffeb3b;
+    --alt-1-style-color-1: #f44336; --alt-1-style-color-2: #ffffff;
+    
+    --alt-2-name-color: #ffffff; --alt-2-info-color: #ffeb3b;
+    --alt-2-style-color-1: #f44336; --alt-2-style-color-2: #ffffff;
 
-    /* Slot Colors - Edit sini untuk tukar warna setiap slot */
-    --s1-n: #ffffff; --s1-i: #ffeb3b;
-    --s2-n: #ffffff; --s2-i: #ffeb3b;
-    --s3-n: #ffffff; --s3-i: #ffeb3b;
-    --s4-n: #ffffff; --s4-i: #ffeb3b;
+    --alt-3-name-color: #ffffff; --alt-3-info-color: #ffeb3b;
+    --alt-3-style-color-1: #f44336; --alt-3-style-color-2: #ffffff;
+
+    --alt-4-name-color: #ffffff; --alt-4-info-color: #ffeb3b;
+    --alt-4-style-color-1: #f44336; --alt-4-style-color-2: #ffffff;
 }
 
-body { margin: 0; padding: 0; overflow: hidden; font-family: 'Google Sans', sans-serif; }
+body { 
+    margin: 0; 
+    padding: 0; 
+    overflow: hidden; 
+    font-family: 'Google Sans', sans-serif; 
+    width: 100vw;
+    height: 100vh;
+}
+
+#container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
 
 .alt {
     position: absolute;
-    bottom: 8%; left: 5%;
-    display: flex; align-items: center;
+    bottom: 8%; 
+    left: 5%;
+    display: flex; 
+    align-items: center;
     background: var(--bg-box);
-    padding: 12px 25px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border-left: 5px solid var(--accent-color, #f44336);
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     backdrop-filter: blur(10px);
     
     opacity: 0;
     visibility: hidden;
     will-change: transform, opacity;
-    transition: transform var(--anim-speed) var(--cubic), opacity var(--anim-speed) linear;
+    transition: transform var(--anim-speed) var(--cubic), 
+                opacity var(--anim-speed) linear,
+                visibility var(--anim-speed);
 }
+
+/* --- SLOT SPECIFIC ACCENT COLOR --- */
+#lower-third-1 { --accent-color: var(--alt-1-style-color-1); }
+#lower-third-2 { --accent-color: var(--alt-2-style-color-1); }
+#lower-third-3 { --accent-color: var(--alt-3-style-color-1); }
+#lower-third-4 { --accent-color: var(--alt-4-style-color-1); }
 
 /* --- LOGIK TRANSITION --- */
 
-/* 1. SLIDE (In Left -> Out Left) */
-.type-slide { transform: translateX(-105vw); }
+/* Slide (Standard) */
+.type-slide { transform: translateX(-120%); }
 .type-slide.animation-in { opacity: 1; visibility: visible; transform: translateX(0); }
-.type-slide.animation-out { opacity: 0; visibility: hidden; transform: translateX(-105vw); }
+.type-slide.animation-out { opacity: 0; visibility: hidden; transform: translateX(-120%); }
 
-/* 2. SLIDE-THRU (In Left -> Out Right) */
-.type-slide-thru { transform: translateX(-105vw); }
+/* Slide-Thru */
+.type-slide-thru { transform: translateX(-120%); }
 .type-slide-thru.animation-in { opacity: 1; visibility: visible; transform: translateX(0); }
-.type-slide-thru.animation-out { opacity: 0; visibility: hidden; transform: translateX(105vw); }
+.type-slide-thru.animation-out { opacity: 0; visibility: hidden; transform: translateX(120%); }
 
-/* 3. FADE */
-.type-fade { transform: scale(0.95); }
+/* Fade */
+.type-fade { transform: scale(0.95); opacity: 0; }
 .type-fade.animation-in { opacity: 1; visibility: visible; transform: scale(1); }
-.type-fade.animation-out { opacity: 0; visibility: hidden; }
+.type-fade.animation-out { opacity: 0; visibility: hidden; transform: scale(0.95); }
 
-/* 4. FLY (Dari Bawah) */
-.type-fly { transform: translateY(150%) scale(0.8); }
-.type-fly.animation-in { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
-.type-fly.animation-out { opacity: 0; visibility: hidden; transform: translateY(150%) scale(0.8); }
+/* Fly */
+.type-fly { transform: translateY(100px); opacity: 0; }
+.type-fly.animation-in { opacity: 1; visibility: visible; transform: translateY(0); }
+.type-fly.animation-out { opacity: 0; visibility: hidden; transform: translateY(100px); }
 
-/* --- LOGO & TEKS --- */
-.logo { display: flex; align-items: center; margin-right: 15px; padding-right: 15px; border-right: 3px solid var(--accent-line); }
-.logo img { height: 50px; width: auto; object-fit: contain; }
+/* --- LOGO --- */
+.logo { 
+    display: flex; 
+    align-items: center; 
+    margin-right: 15px; 
+    padding-right: 15px; 
+    border-right: 1px solid rgba(255,255,255,0.2); 
+}
+.logo img { 
+    height: 50px; 
+    width: auto; 
+    max-width: 80px;
+    object-fit: contain; 
+}
 .no-logo { display: none !important; }
 
-.text-content { display: flex; flex-direction: column; }
-[id*="-name"] { font-size: var(--global-font-size); font-weight: 500; text-transform: uppercase; line-height: 1.1; }
-[id*="-info"] { font-size: calc(var(--global-font-size) * 0.7); margin-top: 2px; }
+/* --- TEXT CONTENT --- */
+.text-content { 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center;
+}
+.text-mask { overflow: hidden; }
 
-/* --- WARNA SLOT (OVERRIDE) --- */
-#alt-1-name { color: var(--s1-n); } #alt-1-info { color: var(--s1-i); }
-#alt-2-name { color: var(--s2-n); } #alt-2-info { color: var(--s2-i); }
-#alt-3-name { color: var(--s3-n); } #alt-3-info { color: var(--s3-i); }
-#alt-4-name { color: var(--s4-n); } #alt-4-info { color: var(--s4-i); }
+[id*="-name"] { 
+    font-size: var(--global-font-size); 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    line-height: 1.1; 
+}
+[id*="-info"] { 
+    font-size: calc(var(--global-font-size) * 0.7); 
+    font-weight: 400;
+    margin-top: 2px; 
+    opacity: 0.9;
+}
 
-/* --- LAYOUT KANAN & LOGIK ANIMASI --- */
-.alt.right { left: auto; right: 5%; flex-direction: row-reverse; }
-.alt.right .logo { margin-right: 0; margin-left: 15px; padding-right: 0; padding-left: 15px; border-right: none; border-left: 3px solid var(--accent-line); }
+/* --- DYNAMIC COLORS (LINKED TO JS) --- */
+#alt-1-name { color: var(--alt-1-name-color); } #alt-1-info { color: var(--alt-1-info-color); }
+#alt-2-name { color: var(--alt-2-name-color); } #alt-2-info { color: var(--alt-2-info-color); }
+#alt-3-name { color: var(--alt-3-name-color); } #alt-3-info { color: var(--alt-3-info-color); }
+#alt-4-name { color: var(--alt-4-name-color); } #alt-4-info { color: var(--alt-4-info-color); }
 
-/* Override animasi untuk Layout Kanan supaya slide masuk dari kanan */
-.alt.right.type-slide { transform: translateX(105vw); }
+/* --- DECORATIVE GRAPHS --- */
+.graph-1 {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(90deg, var(--accent-color), transparent);
+    opacity: 0.1;
+    z-index: -1;
+    border-radius: 8px;
+}
+
+.graph-2 {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 40px; height: 4px;
+    background: var(--accent-color);
+}
+
+/* --- STYLE VARIATIONS --- */
+
+/* Style 2: Accent Background */
+.style-2 {
+    background: var(--accent-color) !important;
+    border-left: none !important;
+}
+.style-2 [id*="-name"], .style-2 [id*="-info"] {
+    color: #ffffff !important; /* Force white text if background is colored */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.style-2 .logo { border-right: 1px solid rgba(255,255,255,0.4); }
+
+/* --- ALIGNMENT RIGHT --- */
+.alt.right { 
+    left: auto; 
+    right: 5%; 
+    flex-direction: row-reverse; 
+    border-left: none;
+    border-right: 5px solid var(--accent-color);
+}
+.alt.right .logo { 
+    margin-right: 0; 
+    margin-left: 15px; 
+    padding-right: 0; 
+    padding-left: 15px; 
+    border-right: none; 
+    border-left: 1px solid rgba(255,255,255,0.2); 
+}
+.alt.right.type-slide { transform: translateX(120%); }
 .alt.right.type-slide.animation-in { transform: translateX(0); }
-.alt.right.type-slide.animation-out { transform: translateX(105vw); }
-.alt.right.type-slide-thru { transform: translateX(105vw); }
-.alt.right.type-slide-thru.animation-out { transform: translateX(-105vw); }
+.alt.right.type-slide.animation-out { transform: translateX(120%); }
