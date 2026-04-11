@@ -28,9 +28,10 @@
 
         /* Input Styles */
         .input-row { display: flex; align-items: center; gap: 5px; margin-bottom: 8px; }
-        .input-row input[type="text"] {
+        .input-row input[type="text"], select {
             flex: 1; padding: 6px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; font-size: 11px;
         }
+        select { cursor: pointer; }
 
         /* Logo Slot Styles */
         .logo-upload-container { display: flex; gap: 8px; margin-top: 8px; }
@@ -73,7 +74,7 @@
         .font-input-group { flex: 1; }
         .size-input-group { width: 80px; }
         .custom-font-row label { font-size: 9px; color: #888; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .custom-font-row input[type="number"] {
+        .custom-font-row input[type="number"], .grid-input input {
             width: 100%; background: #000; color: #fff; border: 1px solid #444; padding: 5px; border-radius: 3px; font-size: 11px;
         }
     </style>
@@ -95,14 +96,39 @@
                 </div>
             </div>
 
-            <!-- Panel Customs (Logo, Font, Animation & Loop) -->
+            <!-- Panel Customs -->
             <div id="customs-panel" style="display:none; background:#1a1a1a; padding:15px; border-radius:4px; margin-top:10px; border:1px solid #333;">
-                <label style="font-size:9px; color:#888;">DEFAULT LOGO (PNG)</label>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <label style="font-size:9px; color:#888;">DEFAULT LOGO (PNG)</label>
+                    <button onclick="resetSystem()" style="background:#f44336; color:white; border:none; padding:4px 8px; border-radius:3px; font-size:9px; cursor:pointer; font-weight: bold;">RESET ALL DATA</button>
+                </div>
+
                 <div class="logo-upload-container">
                     <div class="logo-upload-slot" onclick="document.getElementById('file-global').click()">
                         <img id="preview-global" style="display:none;">
                         <span id="label-global">+</span>
                         <input type="file" id="file-global" hidden accept="image/*" onchange="uploadLogo(this)">
+                    </div>
+                </div>
+
+                <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <!-- Jenis Transition -->
+                    <div>
+                        <label style="font-size:9px; color:#888;">TRANSITION TYPE</label>
+                        <select id="transition-type" onchange="function_send()">
+                            <option value="slide">1. Slide In/Out</option>
+                            <option value="fade">2. Fade In/Out</option>
+                            <option value="fly">3. Fly (Zoom & Slide)</option>
+                        </select>
+                    </div>
+
+                    <!-- Kelajuan Transition (Global Anim Speed) -->
+                    <div class="grid-input">
+                        <label style="font-size:9px; color:#888;">SPEED (SECONDS)</label>
+                        <input type="number" id="global-anim-speed" value="0.6" step="0.1" min="0.1" max="3" oninput="function_send()">
                     </div>
                 </div>
 
@@ -118,12 +144,6 @@
                     <div class="size-input-group">
                         <label>Global Size</label>
                         <input type="number" id="global-font-size" value="24" min="10" max="100" oninput="function_send()">
-                    </div>
-
-                    <!-- Animation Speed -->
-                    <div style="width: 80px;">
-                        <label style="font-size:9px; color:#888; text-transform:uppercase;">Anim Speed (s)</label>
-                        <input type="number" id="global-anim-speed" value="0.6" step="0.1" min="0.1" max="3" oninput="function_send()" style="width:100%; background:#000; color:#fff; border:1px solid #444; padding:5px; border-radius:3px; font-size:11px;">
                     </div>
                 </div>
 
@@ -154,7 +174,7 @@
             </div>
         </div>
 
-        <!-- TEMPAT LOWER THIRDS 1-4 AKAN MUNCUL -->
+        <!-- TEMPAT LOWER THIRDS 1-4 -->
         <div id="lt-sections-container"></div>
     </div>
 
@@ -195,7 +215,7 @@
     <script>
         const bc = new BroadcastChannel('obs-lower-thirds-channel');
 
-        // 1. Bina UI Automatik (4 Sections & 10 Slots)
+        // 1. Bina UI Automatik
         const container = $('#lt-sections-container');
         const template = $('#lt-section-template').html();
 
@@ -208,7 +228,16 @@
             }
         }
 
-        // 2. FUNGSI MUAT NAIK FONT
+        // 2. FUNGSI RESET SYSTEM
+        function resetSystem() {
+            if(confirm("Padam semua data logo, teks dan memori?")) {
+                localStorage.clear();
+                bc.postMessage({ action: 'reset' });
+                location.reload();
+            }
+        }
+
+        // 3. FUNGSI MUAT NAIK FONT
         function uploadFont(input) {
             if (input.files && input.files[0]) {
                 let reader = new FileReader();
@@ -224,14 +253,15 @@
             }
         }
 
-        // 3. LOGIK MUAT NAIK LOGO
+        // 4. LOGIK MUAT NAIK LOGO (Dibaiki)
         function uploadLogo(input) {
             if (input.files && input.files[0]) {
                 let reader = new FileReader();
                 reader.onload = function(e) {
+                    localStorage.removeItem('global_logo_data'); // Bersihkan lama
+                    localStorage.setItem('global_logo_data', e.target.result);
                     $(`#preview-global`).attr('src', e.target.result).show();
                     $(`#label-global`).hide();
-                    localStorage.setItem(`global_logo_data`, e.target.result);
                     updateMiniPreviews();
                     function_send();
                 };
@@ -242,32 +272,33 @@
         function updateMiniPreviews() {
             let logo = localStorage.getItem('global_logo_data');
             if(logo) $('.mini-logo-img').attr('src', logo);
+            else $('.mini-logo-img').attr('src', '');
         }
 
-        // 4. BUTANG TAMBAH/TOLAK (+) - Collapse/Expand
+        // 5. COLLAPSE/EXPAND (+)
         $(document).on('click', '.btn-plus', function() {
             let body = $(this).closest('.sortees').find('.section-body');
             body.slideToggle(200);
             $(this).text($(this).text() === '+' ? '-' : '+');
         });
 
-        // 5. FUNGSI UTAMA HANTAR DATA KE BROADCAST CHANNEL
+        // 6. FUNGSI UTAMA HANTAR DATA
         function function_send() {
             let data = {};
             let master = $('#lower-thirds-masterswitch').is(':checked');
             let globalLogo = localStorage.getItem('global_logo_data');
             let customFont = localStorage.getItem('custom_font_data');
             
-            // Loop & Anim Data
+            // Global Settings
+            data[`transition_type`] = $('#transition-type').val();
+            data[`anim_speed`] = ($('#global-anim-speed').val() || "0.6") + "s";
+            data[`global_logo`] = globalLogo || "";
+            
+            // Loop Data
             let loopEnabled = $('#global-loop-switch').is(':checked');
-            let activeTime = $('#loop-active-time').val() || "5";
-            let idleTime = $('#loop-idle-time').val() || "3";
-            let animSpeed = $('#global-anim-speed').val() || "0.6";
-
             data[`global_loop`] = loopEnabled ? "true" : "false";
-            data[`loop_active_dur`] = activeTime * 1000; 
-            data[`loop_idle_dur`] = idleTime * 1000;
-            data[`anim_speed`] = animSpeed + "s";
+            data[`loop_active_dur`] = ($('#loop-active-time').val() || "5") * 1000; 
+            data[`loop_idle_dur`] = ($('#loop-idle-time').val() || "3") * 1000;
             
             for(let i=1; i<=4; i++) {
                 let sw = $(`#lower-thirds-switch${i}`).is(':checked');
@@ -278,11 +309,8 @@
                 data[`alt_${i}_info_color`] = $(`#alt-${i}-style-color-2`).val();
                 data[`alt_${i}_logo_image`] = globalLogo || "";
                 data[`alt_${i}_logo_switch`] = globalLogo ? "true" : "false";
-                data[`alt_${i}_align`] = "left";
-                data[`alt_${i}_style`] = "1";
             }
 
-            // Hantar data Font & Global tambahan
             data[`font_data`] = customFont || "";
             data[`font_size`] = ($('#global-font-size').val() || "24") + "px";
 
@@ -302,7 +330,7 @@
             }
         }
 
-        // 6. LOGIK MEMORI (LONG PRESS SIMPAN / KLIK LOAD)
+        // 7. MEMORY LOGIC
         $(document).on('mousedown', '[id*=-slot-]', function() {
             let slotId = $(this).attr('id');
             let altNum = slotId.split('-')[1];
@@ -330,11 +358,11 @@
             }
         });
 
-        // 7. AUTO-SAVE & LOAD SETTINGS
+        // 8. PERSISTENCE
         function savePanelSettings() {
-            $('input').each(function() {
+            $('input, select').each(function() {
                 let id = $(this).attr('id');
-                if(id && id !== 'font-file' && id !== 'file-global') { 
+                if(id && !['font-file', 'file-global'].includes(id)) { 
                     let val = $(this).attr('type') === 'checkbox' ? $(this).is(':checked') : $(this).val();
                     localStorage.setItem("p_" + id, val);
                 }
@@ -342,7 +370,7 @@
         }
 
         function loadPanelSettings() {
-            $('input').each(function() {
+            $('input, select').each(function() {
                 let id = $(this).attr('id');
                 let saved = localStorage.getItem("p_" + id);
                 if (saved !== null) {
@@ -351,7 +379,6 @@
                 }
             });
             
-            // Load Logo
             let savedLogo = localStorage.getItem('global_logo_data');
             if(savedLogo) {
                 $(`#preview-global`).attr('src', savedLogo).show();
@@ -359,11 +386,9 @@
                 updateMiniPreviews();
             }
 
-            // Load Font Status
             let savedFontName = localStorage.getItem('custom_font_name');
             if(savedFontName) $('#font-status').text('Font: ' + savedFontName + ' (Loaded)');
 
-            // Load Memory Slots Visual
             $('[id*=-slot-]').each(function() {
                 if (localStorage.getItem($(this).attr('id') + '_name')) $(this).addClass('stored');
             });
@@ -373,10 +398,7 @@
 
         $(document).ready(function() {
             loadPanelSettings();
-            
-            // Event Listeners
-            $(document).on('change input', 'input', function() { function_send(); });
-
+            $(document).on('change input', 'input, select', function() { function_send(); });
             $('.btn-upper').click(function() {
                 let inp = $(this).siblings('input[type="text"]');
                 inp.val(inp.val().toUpperCase());
