@@ -1,250 +1,89 @@
-/* style-source.css - Gaya Modern Rounded Pro (Google Sans Edition) - TV Look Version */
-/* Full Expanded Version with Slide, Fade, and Fly Transitions */
+/* style-source.css - Optimized Premium Final */
 
-/* 1. IMPORT GOOGLE SANS */
 @font-face {
     font-family: 'Google Sans';
     src: local('Google Sans Regular'), local('Google Sans'), 
          url('https://fonts.gstatic.com/s/googlesans/v14/4UaGrENHsxJlGDuGo1OIlL3Kwp5eKQtGBlc.woff2') format('woff2');
     font-weight: 400;
-    font-style: normal;
 }
 
 :root {
-    /* Warna Asas */
-    --bg-box: rgba(15, 15, 15, 0.92); 
-    --accent-line: #f44336;           
-    --text-white: #ffffff;
-    --text-yellow: #ffeb3b;           
-    
-    /* Animasi & Transisi (TV-Look) */
-    --anim-speed: 0.6s;               
-    --cubic-bezier: cubic-bezier(0.16, 1, 0.3, 1); /* Digunakan untuk animasi smooth */
-    --cubic-in: cubic-bezier(0.16, 1, 0.3, 1);  
-    --cubic-out: cubic-bezier(0.7, 0, 0.84, 0); 
-    
-    /* Variable Dinamik */
-    --global-font-size: 24px; 
-    
-    /* Warna Custom Slot 1 */
-    --alt-1-name-color: #ffffff;
-    --alt-1-info-color: #ffeb3b;
-    
-    /* Warna Custom Slot 2 */
-    --alt-2-name-color: #ffffff;
-    --alt-2-info-color: #ffeb3b;
-    
-    /* Warna Custom Slot 3 */
-    --alt-3-name-color: #ffffff;
-    --alt-3-info-color: #ffeb3b;
-    
-    /* Warna Custom Slot 4 */
-    --alt-4-name-color: #ffffff;
-    --alt-4-info-color: #ffeb3b;
+    --bg-box: rgba(15, 15, 15, 0.96);
+    --accent-line: #f44336;
+    --global-font-size: 24px;
+    --anim-speed: 0.8s;
+    --cubic: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Slot Colors - Edit sini untuk tukar warna setiap slot */
+    --s1-n: #ffffff; --s1-i: #ffeb3b;
+    --s2-n: #ffffff; --s2-i: #ffeb3b;
+    --s3-n: #ffffff; --s3-i: #ffeb3b;
+    --s4-n: #ffffff; --s4-i: #ffeb3b;
 }
 
-/* 2. TETAPAN ASAS */
-body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    font-family: 'Google Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
+body { margin: 0; padding: 0; overflow: hidden; font-family: 'Google Sans', sans-serif; }
 
-/* 3. BEKAS UTAMA (CONTAINER) */
 .alt {
     position: absolute;
-    bottom: 8%;
-    left: 5%;
-    display: flex;
-    align-items: center;
-    
-    /* Gaya Visual Premium */
+    bottom: 8%; left: 5%;
+    display: flex; align-items: center;
     background: var(--bg-box);
-    padding: 14px 28px;
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-    backdrop-filter: blur(12px);
-
-    /* Status Asal (Tersembunyi) */
-    visibility: hidden;
-    opacity: 0;
+    padding: 12px 25px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px);
     
-    /* Logik Transisi Default */
-    transition: all var(--anim-speed) var(--cubic-bezier);
-    will-change: transform, opacity;
-}
-
-/* 4. SISTEM ANIMASI (3 JENIS TRANSITION) */
-
-/* Keadaan Umum Apabila Animasi Masuk (In) */
-.animation-in {
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-/* Keadaan Umum Apabila Animasi Keluar (Out) */
-.animation-out {
-    visibility: hidden;
     opacity: 0;
+    visibility: hidden;
+    will-change: transform, opacity;
+    transition: transform var(--anim-speed) var(--cubic), opacity var(--anim-speed) linear;
 }
 
-/* --- (1) SLIDE IN/OUT (Default) --- */
-.type-slide {
-    transform: translateX(-60px); /* Posisi asal sebelum masuk */
-}
-.type-slide.animation-in {
-    transform: translateX(0) !important;
-}
-.type-slide.animation-out {
-    transform: translateX(-50px);
-    transition: all var(--anim-speed) var(--cubic-out);
-}
+/* --- LOGIK TRANSITION --- */
 
-/* --- (2) FADE IN/OUT --- */
-.type-fade {
-    transform: translateX(0); /* Kekal di posisi */
-}
-.type-fade.animation-in {
-    transform: translateX(0) !important;
-}
-.type-fade.animation-out {
-    transform: translateX(0); /* Kekal posisi, cuma pudar */
-    transition: opacity var(--anim-speed) ease-in;
-}
+/* 1. SLIDE (In Left -> Out Left) */
+.type-slide { transform: translateX(-105vw); }
+.type-slide.animation-in { opacity: 1; visibility: visible; transform: translateX(0); }
+.type-slide.animation-out { opacity: 0; visibility: hidden; transform: translateX(-105vw); }
 
-/* --- (3) FLY IN/OUT (Zoom & Slide) --- */
-.type-fly {
-    transform: scale(0.5) translateY(50px); /* Kecil dan di bawah */
-}
-.type-fly.animation-in {
-    transform: scale(1) translateY(0) !important;
-}
-.type-fly.animation-out {
-    transform: scale(0.5) translateY(50px);
-    transition: all var(--anim-speed) var(--cubic-out);
-}
+/* 2. SLIDE-THRU (In Left -> Out Right) */
+.type-slide-thru { transform: translateX(-105vw); }
+.type-slide-thru.animation-in { opacity: 1; visibility: visible; transform: translateX(0); }
+.type-slide-thru.animation-out { opacity: 0; visibility: hidden; transform: translateX(105vw); }
 
-/* Kelas penyembunyi mutlak */
-.hide-anim {
-    visibility: hidden !important;
-    opacity: 0 !important;
-}
+/* 3. FADE */
+.type-fade { transform: scale(0.95); }
+.type-fade.animation-in { opacity: 1; visibility: visible; transform: scale(1); }
+.type-fade.animation-out { opacity: 0; visibility: hidden; }
 
+/* 4. FLY (Dari Bawah) */
+.type-fly { transform: translateY(150%) scale(0.8); }
+.type-fly.animation-in { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+.type-fly.animation-out { opacity: 0; visibility: hidden; transform: translateY(150%) scale(0.8); }
 
-/* 5. BAHAGIAN LOGO */
-.logo {
-    display: flex;
-    align-items: center;
-    margin-right: 20px;
-    padding-right: 20px;
-    border-right: 3px solid var(--accent-line);
-}
+/* --- LOGO & TEKS --- */
+.logo { display: flex; align-items: center; margin-right: 15px; padding-right: 15px; border-right: 3px solid var(--accent-line); }
+.logo img { height: 50px; width: auto; object-fit: contain; }
+.no-logo { display: none !important; }
 
-.logo img {
-    height: 55px;
-    width: auto;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-}
+.text-content { display: flex; flex-direction: column; }
+[id*="-name"] { font-size: var(--global-font-size); font-weight: 500; text-transform: uppercase; line-height: 1.1; }
+[id*="-info"] { font-size: calc(var(--global-font-size) * 0.7); margin-top: 2px; }
 
-.no-logo {
-    display: none;
-}
+/* --- WARNA SLOT (OVERRIDE) --- */
+#alt-1-name { color: var(--s1-n); } #alt-1-info { color: var(--s1-i); }
+#alt-2-name { color: var(--s2-n); } #alt-2-info { color: var(--s2-i); }
+#alt-3-name { color: var(--s3-n); } #alt-3-info { color: var(--s3-i); }
+#alt-4-name { color: var(--s4-n); } #alt-4-info { color: var(--s4-i); }
 
-/* 6. BAHAGIAN TEKS & SAIZ DINAMIK */
-.text-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
+/* --- LAYOUT KANAN & LOGIK ANIMASI --- */
+.alt.right { left: auto; right: 5%; flex-direction: row-reverse; }
+.alt.right .logo { margin-right: 0; margin-left: 15px; padding-right: 0; padding-left: 15px; border-right: none; border-left: 3px solid var(--accent-line); }
 
-[id*="-name"] {
-    font-size: var(--global-font-size);
-    font-weight: 500;
-    margin: 0;
-    padding: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    line-height: 1.1;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
-}
-
-[id*="-info"] {
-    font-size: calc(var(--global-font-size) * 0.75);
-    font-weight: 400;
-    margin-top: 4px;
-    letter-spacing: 0.3px;
-    opacity: 0.9;
-}
-
-/* 7. PENGURUSAN WARNA SLOT (OVERRIDE) */
-
-/* Slot 1 */
-#alt-1-name { 
-    color: var(--alt-1-name-color); 
-}
-#alt-1-info { 
-    color: var(--alt-1-info-color); 
-}
-
-/* Slot 2 */
-#alt-2-name { 
-    color: var(--alt-2-name-color); 
-}
-#alt-2-info { 
-    color: var(--alt-2-info-color); 
-}
-
-/* Slot 3 */
-#alt-3-name { 
-    color: var(--alt-3-name-color); 
-}
-#alt-3-info { 
-    color: var(--alt-3-info-color); 
-}
-
-/* Slot 4 */
-#alt-4-name { 
-    color: var(--alt-4-name-color); 
-}
-#alt-4-info { 
-    color: var(--alt-4-info-color); 
-}
-
-/* 8. SOKONGAN LAYOUT KANAN (RIGHT ALIGN) */
-.alt.right {
-    left: auto;
-    right: 5%;
-    flex-direction: row-reverse;
-}
-
-.alt.right .logo {
-    margin-right: 0;
-    margin-left: 20px;
-    padding-right: 0;
-    padding-left: 20px;
-    border-right: none;
-    border-left: 3px solid var(--accent-line);
-}
-
-/* Overrides Animasi untuk Layout Kanan (Supaya arah pergerakan betul) */
-.alt.right.type-slide {
-    transform: translateX(60px); /* Masuk dari kanan */
-}
-
-.alt.right.type-slide.animation-in {
-    transform: translateX(0) !important;
-}
-
-.alt.right.type-slide.animation-out {
-    transform: translateX(50px) !important;
-}
-
-.alt.right.type-fly.animation-out {
-    transform: scale(0.5) translateY(50px) !important;
-}
-
-/* Akhir Fail */
+/* Override animasi untuk Layout Kanan supaya slide masuk dari kanan */
+.alt.right.type-slide { transform: translateX(105vw); }
+.alt.right.type-slide.animation-in { transform: translateX(0); }
+.alt.right.type-slide.animation-out { transform: translateX(105vw); }
+.alt.right.type-slide-thru { transform: translateX(105vw); }
+.alt.right.type-slide-thru.animation-out { transform: translateX(-105vw); }
