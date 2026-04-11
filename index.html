@@ -3,113 +3,155 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Dashboard - OBS Lower Thirds</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>MASTER CONTROL DASHBOARD - OBS PRO V2.1</title>
+    
+    <!-- Import Google Fonts secara lengkap -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
     <style>
+        /* =========================================
+           GLOBAL VARIABLES & ROOT STYLING
+           ========================================= */
         :root {
             --primary-blue: #2196F3;
-            --dark-bg: #0f0f0f;
-            --panel-bg: #1a1a1a;
-            --border-color: #333;
-            --text-color: #efefef;
+            --primary-hover: #1976D2;
+            --dark-bg: #0c0c0c;
+            --panel-bg: #161616;
+            --border-color: #2d2d2d;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+            --accent-red: #ff4444;
+            --status-green: #4CAF50;
+        }
+
+        /* Reset Default Browser Styling */
+        * {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body {
             margin: 0;
             padding: 0;
             background-color: var(--dark-bg);
-            color: var(--text-color);
+            color: var(--text-main);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden;
+            width: 100vw;
+            overflow: hidden; /* Elakkan scroll pada dashboard utama */
         }
 
-        /* Header Styling */
+        /* =========================================
+           HEADER SECTION
+           ========================================= */
         header {
-            background-color: #162431;
-            padding: 12px 25px;
+            background-color: #1a2634;
+            height: 60px;
+            padding: 0 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid var(--primary-blue);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            z-index: 100;
         }
 
         .logo-area {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .logo-dot {
             height: 12px;
             width: 12px;
-            background-color: #ff4444;
+            background-color: var(--accent-red);
             border-radius: 50%;
-            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 10px var(--accent-red);
+            animation: pulse-animation 2s infinite;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
+        @keyframes pulse-animation {
+            0% { transform: scale(0.95); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.5; }
+            100% { transform: scale(0.95); opacity: 1; }
         }
 
         header h1 {
             margin: 0;
-            font-size: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        /* Main Layout */
-        .main-container {
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--status-green);
+            background: rgba(76, 175, 80, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        /* =========================================
+           MAIN CONTENT LAYOUT
+           ========================================= */
+        .main-wrapper {
             display: flex;
             flex: 1;
-            gap: 2px;
-            background-color: var(--border-color);
             overflow: hidden;
+            background-color: var(--border-color);
         }
 
-        /* Control Side (Kiri) - Diberi scroll jika content panjang */
-        .panel-side {
-            width: 40%;
+        /* Control Panel Side */
+        .side-control {
+            width: 420px;
+            height: 100%;
             background-color: var(--panel-bg);
             display: flex;
             flex-direction: column;
-            min-width: 400px;
-            overflow: hidden;
+            border-right: 1px solid var(--border-color);
+            z-index: 5;
         }
 
-        /* Preview Side (Kanan) */
-        .preview-side {
-            width: 60%;
-            background-color: #000;
+        /* Live Preview Side */
+        .side-preview {
+            flex: 1;
+            height: 100%;
+            background-color: #050505;
             display: flex;
             flex-direction: column;
             position: relative;
         }
 
-        .preview-header {
+        .preview-label {
             background: #222;
-            padding: 8px 15px;
+            padding: 10px 20px;
             font-size: 11px;
             font-weight: bold;
-            color: #888;
-            text-transform: uppercase;
+            color: var(--text-dim);
             display: flex;
             justify-content: space-between;
+            align-items: center;
             border-bottom: 1px solid #333;
         }
 
-        .preview-container {
+        .iframe-container {
             flex: 1;
+            width: 100%;
+            height: 100%;
             position: relative;
-            /* Corak Checkerboard untuk simulasi transparensi */
+            /* Checkerboard Transparent Pattern */
             background-image: 
                 linear-gradient(45deg, #111 25%, transparent 25%), 
                 linear-gradient(-45deg, #111 25%, transparent 25%), 
@@ -123,42 +165,56 @@
             width: 100%;
             height: 100%;
             border: none;
+            display: block;
         }
 
-        /* Floating Instructions */
-        .instructions {
+        /* =========================================
+           FLOATING INSTRUCTIONS
+           ========================================= */
+        .floating-info {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(20, 20, 20, 0.9);
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 11px;
-            border-left: 4px solid var(--primary-blue);
-            max-width: 250px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            pointer-events: none;
-            transition: opacity 0.5s;
-            z-index: 100;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            border-radius: 12px;
+            width: 300px;
+            border-left: 5px solid var(--primary-blue);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            transition: all 0.8s ease;
+            z-index: 999;
         }
 
-        .instructions h3 { margin: 0 0 8px 0; color: var(--primary-blue); font-size: 13px; }
-        .instructions ul { padding-left: 15px; margin: 0; color: #ccc; }
-        .instructions li { margin-bottom: 4px; }
+        .floating-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: var(--primary-blue);
+        }
 
+        .floating-info ul {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 12px;
+            line-height: 1.8;
+            color: #ccc;
+        }
+
+        /* =========================================
+           FOOTER
+           ========================================= */
         footer {
-            background: #111;
-            padding: 5px 20px;
-            font-size: 10px;
-            color: #555;
+            background-color: #0a0a0a;
+            height: 30px;
+            padding: 0 20px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            color: #444;
+            border-top: 1px solid #1a1a1a;
         }
 
-        @media (max-width: 1000px) {
-            .main-container { flex-direction: column; }
-            .panel-side, .preview-side { width: 100%; height: 50vh; }
-        }
     </style>
 </head>
 <body>
@@ -166,82 +222,79 @@
     <header>
         <div class="logo-area">
             <div class="logo-dot"></div>
-            <h1>Lower Thirds Controller <span style="color: #666; font-weight: normal;">| OBS Production Suite</span></h1>
+            <h1>LT Production <span style="color: var(--primary-blue);">PRO EDITION</span></h1>
         </div>
-        <div id="connection-status" style="font-size: 11px; color: #4CAF50;">
-            ● SISTEM HUBUNGAN AKTIF
+        <div class="system-status">
+            <span id="status-text">● CONNECTION ACTIVE</span>
         </div>
     </header>
 
-    <div class="main-container">
-        <!-- Panel Kawalan Kiri -->
-        <div class="panel-side">
-            <!-- Source ke control-panel.html -->
-            <iframe id="frame-control" src="control-panel.html" title="Control Panel"></iframe>
-        </div>
+    <div class="main-wrapper">
+        <!-- Bahagian Kawalan (Kiri) -->
+        <section class="side-control">
+            <iframe src="control-panel.html" id="ctrl-frame"></iframe>
+        </section>
 
-        <!-- Preview Kanan -->
-        <div class="preview-side">
-            <div class="preview-header">
-                <span>Output Live Preview (Simulasi OBS)</span>
-                <span id="sync-indicator" style="color: #888;">SYNC: OK</span>
+        <!-- Bahagian Output (Kanan) -->
+        <section class="side-preview">
+            <div class="preview-label">
+                <span>LIVE SIMULATION (1920x1080)</span>
+                <span id="sync-notifier" style="transition: 0.3s;">SYNC: READY</span>
             </div>
-            <div class="preview-container">
-                <!-- Source ke browser-source.html -->
-                <iframe id="frame-source" src="browser-source.html" title="Browser Source Preview"></iframe>
+            <div class="iframe-container">
+                <iframe src="browser-source.html" id="out-frame"></iframe>
             </div>
 
-            <div class="instructions" id="info-box">
-                <h3>Panduan Dashboard</h3>
+            <!-- Panduan Pengguna -->
+            <div class="floating-info" id="guide-box">
+                <h3>Quick Start Guide</h3>
                 <ul>
-                    <li><strong>Logo:</strong> Klik butang 'Customs' di kiri atas untuk muat naik PNG.</li>
-                    <li><strong>Tambah/Tolak:</strong> Gunakan butang (+) untuk kembangkan setting setiap LT.</li>
-                    <li><strong>Memori:</strong> Tahan 1 saat pada kotak nombor untuk simpan teks.</li>
+                    <li>Input nama & jawatan di panel kiri.</li>
+                    <li>Klik <strong>SHOW</strong> untuk paparkan grafik.</li>
+                    <li>Tahan butang nombor untuk <strong>SAVE</strong> memori.</li>
+                    <li>Gunakan butang Reset jika grafik tidak muncul.</li>
                 </ul>
             </div>
-        </div>
+        </section>
     </div>
 
     <footer>
-        <span>Broadcast Channel: obs-lower-thirds-channel</span>
-        <span>Status: Connected to LocalStorage</span>
+        <div class="foot-left">Internal Channel: obs-lower-thirds-channel</div>
+        <div class="foot-right">Build v2.1.0-stable | 2024 Production Suite</div>
     </footer>
 
     <script>
-        /** 
-         * DASHBOARD LOGIC
-         * Kita tidak perlukan 'bridge' lagi kerana control-panel.html yang baru 
-         * sudah menghantar data terus ke 'obs-lower-thirds-channel' 
-         * yang sama dengan browser-source.html.
+        /**
+         * MONITORING SCRIPT
+         * Berfungsi untuk memberi maklumbalas visual pada dashboard
          */
+        const channel = new BroadcastChannel('obs-lower-thirds-channel');
+        const syncLabel = document.getElementById('sync-notifier');
 
-        const channelName = 'obs-lower-thirds-channel';
-        const bc = new BroadcastChannel(channelName);
-
-        // Debugging: Lihat data yang lalu lalang di Dashboard
-        bc.onmessage = (ev) => {
-            console.log("Dashboard Monitoring:", ev.data);
-            
-            // Visual feedback pada preview header
-            const sync = document.getElementById('sync-indicator');
-            sync.style.color = '#4CAF50';
-            sync.innerText = 'SYNC: DATA RECEIVED';
+        channel.onmessage = (event) => {
+            // Beri kelipan hijau pada teks SYNC bila data masuk
+            syncLabel.style.color = '#4CAF50';
+            syncLabel.innerText = 'SYNC: DATA SENT';
             
             setTimeout(() => {
-                sync.style.color = '#888';
-                sync.innerText = 'SYNC: OK';
+                syncLabel.style.color = '';
+                syncLabel.innerText = 'SYNC: READY';
             }, 1000);
         };
 
-        // Sorok panduan selepas 15 saat
+        // Hilangkan kotak info selepas 15 saat supaya tak kacau view
         setTimeout(() => {
-            const info = document.getElementById('info-box');
-            if(info) info.style.opacity = '0.2';
+            const guide = document.getElementById('guide-box');
+            if(guide) {
+                guide.style.opacity = '0';
+                guide.style.transform = 'translateY(20px)';
+                guide.style.pointerEvents = 'none';
+            }
         }, 15000);
 
-        // Jika iframe gagal load
-        document.getElementById('frame-control').onerror = function() {
-            console.error("Gagal memuatkan control-panel.html. Pastikan nama fail betul.");
+        // Error detection untuk Iframe
+        window.onload = () => {
+            console.log("Dashboard Loaded Successfully.");
         };
     </script>
 </body>
