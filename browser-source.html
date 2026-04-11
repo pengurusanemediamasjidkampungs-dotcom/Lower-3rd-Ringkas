@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lower Thirds Source - Pro Edition (Updated)</title>
+    <title>Lower Thirds Source - Pro Edition (Optimized)</title>
     <!-- Path CSS -->
     <link rel="stylesheet" href="common/css/style-source.css">
     <script src="common/js/jquery.js"></script>
@@ -18,24 +18,27 @@
             transition: all var(--anim-speed) ease-in-out;
         }
 
-        /* Placeholder untuk jenis transisi jika belum ada dalam CSS luar */
-        .type-fade.animation-in { opacity: 1; }
-        .type-fade.animation-out { opacity: 0; }
+        /* Transition Types Fallback */
+        .type-fade.animation-in { opacity: 1; visibility: visible; }
+        .type-fade.animation-out { opacity: 0; visibility: hidden; }
         
-        .type-slide.animation-in { transform: translateX(0); opacity: 1; }
-        .type-slide.animation-out { transform: translateX(-100%); opacity: 0; }
+        .type-slide.animation-in { transform: translateX(0); opacity: 1; visibility: visible; }
+        .type-slide.animation-out { transform: translateX(-100%); opacity: 0; visibility: hidden; }
 
-        .type-fly.animation-in { transform: translateY(0); opacity: 1; }
-        .type-fly.animation-out { transform: translateY(50px); opacity: 0; }
+        .type-fly.animation-in { transform: translateY(0); opacity: 1; visibility: visible; }
+        .type-fly.animation-out { transform: translateY(50px); opacity: 0; visibility: hidden; }
+
+        /* Sembunyikan elemen secara asal */
+        .alt { visibility: hidden; opacity: 0; }
     </style>
 </head>
 <body class="browser-source lower-thirds">
 
     <div id="container">
-        <!-- Lower third 1-4 (Struktur dikekalkan) -->
-        <div id="lower-third-1" class="alt left style-1 hide-anim">
+        <!-- Slot 1 -->
+        <div id="lower-third-1" class="alt left style-1">
             <div id="alt-1-logo" class="logo no-logo">
-                <img id="alt-1-logo-image" src="//:0" />
+                <img id="alt-1-logo-image" src="" />
             </div>
             <div class="graph-1"></div>
             <div class="text-content">
@@ -45,9 +48,10 @@
             <div class="graph-2"></div>
         </div>
 
-        <div id="lower-third-2" class="alt left style-1 hide-anim">
+        <!-- Slot 2 -->
+        <div id="lower-third-2" class="alt left style-1">
             <div id="alt-2-logo" class="logo no-logo">
-                <img id="alt-2-logo-image" src="//:0" />
+                <img id="alt-2-logo-image" src="" />
             </div>
             <div class="graph-1"></div>
             <div class="text-content">
@@ -57,9 +61,10 @@
             <div class="graph-2"></div>
         </div>
 
-        <div id="lower-third-3" class="alt left style-1 hide-anim">
+        <!-- Slot 3 -->
+        <div id="lower-third-3" class="alt left style-1">
             <div id="alt-3-logo" class="logo no-logo">
-                <img id="alt-3-logo-image" src="//:0" />
+                <img id="alt-3-logo-image" src="" />
             </div>
             <div class="graph-1"></div>
             <div class="text-content">
@@ -69,9 +74,10 @@
             <div class="graph-2"></div>
         </div>
 
-        <div id="lower-third-4" class="alt left style-1 hide-anim">
+        <!-- Slot 4 -->
+        <div id="lower-third-4" class="alt left style-1">
             <div id="alt-4-logo" class="logo no-logo">
-                <img id="alt-4-logo-image" src="//:0" />
+                <img id="alt-4-logo-image" src="" />
             </div>
             <div class="graph-1"></div>
             <div class="text-content">
@@ -88,148 +94,124 @@
 
         let loopTimers = {};
 
-        // --- FUNGSI ANIMASI ---
-        function animationIn(id) {
+        // Helper untuk animasi
+        function showLT(id) {
             const el = document.getElementById(id);
             if (!el) return;
-            el.classList.remove("hide-anim", "animation-out");
-            void el.offsetWidth; 
+            el.classList.remove("animation-out");
+            void el.offsetWidth; // Force reflow
             el.classList.add("animation-in");
+            el.style.visibility = "visible";
         }
 
-        function animationOut(id) {
+        function hideLT(id) {
             const el = document.getElementById(id);
             if (!el) return;
             el.classList.remove("animation-in");
-            void el.offsetWidth;
+            void el.offsetWidth; // Force reflow
             el.classList.add("animation-out");
         }
 
-        // --- SISTEM LOOP ---
-        function runLoopSystem(index, activeDur, idleDur) {
+        // Fungsi Loop Utama
+        function startLoop(index, activeDur, idleDur) {
             const ltId = `lower-third-${index}`;
-            if (loopTimers[ltId]) clearTimeout(loopTimers[ltId]);
-
-            function cycle() {
-                animationIn(ltId);
+            
+            function run() {
+                showLT(ltId);
                 loopTimers[ltId] = setTimeout(() => {
-                    animationOut(ltId);
+                    hideLT(ltId);
                     loopTimers[ltId] = setTimeout(() => {
-                        cycle();
+                        run();
                     }, parseInt(idleDur));
                 }, parseInt(activeDur));
             }
-            cycle();
+            run();
         }
 
-        // --- 1. MENDENGAR DATA (BCP) ---
         bcp.onmessage = function (ev) {
             const data = ev.data;
-            let root = document.documentElement;
+            const root = document.documentElement;
 
-            // LOGIK RESET (Fungsi Baru)
+            // Logik Reset
             if (data.action === 'reset') {
-                for(let i=1; i<=4; i++) {
-                    const ltId = `lower-third-${i}`;
-                    if (loopTimers[ltId]) clearTimeout(loopTimers[ltId]);
-                    document.getElementById(`alt-${i}-logo-image`).src = "//:0";
-                    animationOut(ltId);
-                }
+                location.reload();
                 return;
             }
 
-            // GLOBAL SETTINGS
+            // Global Settings
             if (data.anim_speed) root.style.setProperty('--anim-speed', data.anim_speed + "s");
             if (data.font_size) root.style.setProperty('--global-font-size', data.font_size + "px");
 
-            // TRANSITION TYPE (Fungsi Baru: slide, fade, fly)
             const typeClass = `type-${data.transition_type || 'slide'}`;
 
-            // FONT DINAMIK
-            if (data.font_data) {
-                let fontStyle = document.getElementById('dynamic-font-style');
-                if (!fontStyle) {
-                    fontStyle = document.createElement('style');
-                    fontStyle.id = 'dynamic-font-style';
-                    document.head.appendChild(fontStyle);
-                }
-                fontStyle.innerHTML = `@font-face { font-family: 'CustomUserFont'; src: url('${data.font_data}'); } body, .alt { font-family: 'CustomUserFont', sans-serif !important; }`;
-            }
-
-            // LOOP SETIAP LOWER THIRD
+            // Loop 1 hingga 4
             for (let i = 1; i <= 4; i++) {
                 const ltId = `lower-third-${i}`;
                 const ltContainer = document.getElementById(ltId);
                 if (!ltContainer) continue;
 
-                // Stop timer sedia ada sebelum update
-                if (loopTimers[ltId]) clearTimeout(loopTimers[ltId]);
+                // Hentikan timer sedia ada sebelum update
+                if (loopTimers[ltId]) {
+                    clearTimeout(loopTimers[ltId]);
+                    delete loopTimers[ltId];
+                }
 
-                // Update Transition Class
-                ltContainer.classList.remove('type-slide', 'type-fade', 'type-fly');
-                ltContainer.classList.add(typeClass);
+                // Update Isi Kandungan (Teks)
+                document.getElementById(`alt-${i}-name`).innerHTML = data[`alt_${i}_name`] || "";
+                document.getElementById(`alt-${i}-info`).innerHTML = data[`alt_${i}_info`] || "";
 
-                // Update Teks & Warna
-                const nameEl = document.getElementById(`alt-${i}-name`);
-                const infoEl = document.getElementById(`alt-${i}-info`);
-                if (nameEl) nameEl.innerHTML = data[`alt_${i}_name`] || "";
-                if (infoEl) infoEl.innerHTML = data[`alt_${i}_info`] || "";
-
+                // Update Warna & Saiz (CSS Variables)
                 root.style.setProperty(`--alt-${i}-name-color`, data[`alt_${i}_name_color`]);
                 root.style.setProperty(`--alt-${i}-info-color`, data[`alt_${i}_info_color`]);
                 root.style.setProperty(`--alt-${i}-style-color-1`, data[`alt_${i}_style_color_1`]);
                 root.style.setProperty(`--alt-${i}-style-color-2`, data[`alt_${i}_style_color_2`]);
-                if (data[`alt_${i}_size`]) root.style.setProperty(`--alt-${i}-size`, data[`alt_${i}_size`] + "px");
+                if (data[`alt_${i}_size` ] ) root.style.setProperty(`--alt-${i}-size`, data[`alt_${i}_size`] + "px");
 
-                // Layout & Align
+                // Update Layout & Transition Class
                 ltContainer.className = `alt ${data[`alt_${i}_align`]} style-${data[`alt_${i}_style`]} ${typeClass}`;
 
-                // LOGIK LOGO (Gabungan Global & Per-LT)
+                // Logik Logo
                 const logoImg = document.getElementById(`alt-${i}-logo-image`);
                 const logoDiv = document.getElementById(`alt-${i}-logo`);
-                
-                let logoToUse = "//:0";
-                let showLogo = false;
+                let logoUrl = "";
 
-                // Cek logo spesifik LT dahulu, jika tiada cek logo global
                 if (data[`alt_${i}_logo_switch`] === "true") {
-                    if (data[`alt_${i}_logo_image`]) {
-                        logoToUse = data[`alt_${i}_logo_image`];
-                        showLogo = true;
-                    } else if (data.global_logo) {
-                        logoToUse = data.global_logo;
-                        showLogo = true;
-                    }
+                    // Keutamaan: Logo Slot > Logo Global
+                    logoUrl = data[`alt_${i}_logo_image`] || data.global_logo || "";
                 }
 
-                if (showLogo) {
+                if (logoUrl && logoUrl !== "") {
+                    logoImg.src = logoUrl;
                     logoDiv.classList.remove("no-logo");
-                    if(logoImg.src !== logoToUse) logoImg.src = logoToUse;
                 } else {
+                    logoImg.src = "";
                     logoDiv.classList.add("no-logo");
-                    logoImg.src = "//:0";
                 }
 
-                // LOGIK ANIMASI (Loop vs Manual)
-                if (data.global_loop === "true" && data[`alt_${i}_switch`] === "true") {
-                    runLoopSystem(i, data.loop_active_dur || 5000, data.loop_idle_dur || 3000);
-                } else {
-                    if (data[`alt_${i}_switch`] === "true") {
-                        animationIn(ltId);
+                // Logik Paparan (Loop vs Manual)
+                const isActive = data[`alt_${i}_switch`] === "true";
+                const isLoopMode = data.global_loop === "true";
+
+                if (isActive) {
+                    if (isLoopMode) {
+                        startLoop(i, data.loop_active_dur || 5000, data.loop_idle_dur || 3000);
                     } else {
-                        animationOut(ltId);
+                        showLT(ltId);
                     }
+                } else {
+                    hideLT(ltId);
                 }
             }
         };
 
-        // --- 2. MENDENGAR FONT (BCF) ---
+        // Font Dinamik
         bcf.onmessage = function (ev) {
             if (ev.data && ev.data.new_font_to_send) {
-                $('head').append('<style>' + ev.data.new_font_to_send + '</style>');
+                const style = document.createElement('style');
+                style.innerHTML = ev.data.new_font_to_send;
+                document.head.appendChild(style);
             }
         };
-
     </script>
 </body>
 </html>
