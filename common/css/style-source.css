@@ -1,4 +1,5 @@
-/* style-source.css - Gaya Modern Rounded Pro (Google Sans Edition) - Updated */
+/* style-source.css - Gaya Modern Rounded Pro (Google Sans Edition) - TV Look Version */
+/* Full Expanded Version */
 
 /* 1. IMPORT GOOGLE SANS */
 @font-face {
@@ -11,17 +12,17 @@
 
 :root {
     /* Warna Asas */
-    --bg-box: rgba(20, 20, 20, 0.95); /* Hitam kelabu sangat gelap */
-    --accent-line: #f44336;           /* Garisan merah sebelah logo */
+    --bg-box: rgba(15, 15, 15, 0.92); 
+    --accent-line: #f44336;           
     --text-white: #ffffff;
-    --text-yellow: #ffeb3b;           /* Warna kuning untuk info */
+    --text-yellow: #ffeb3b;           
     
-    /* Animasi & Transisi */
-    --anim-speed: 0.6s;               /* Kelajuan animasi baru */
-    --cubic-in: cubic-bezier(0.16, 1, 0.3, 1);
-    --cubic-out: cubic-bezier(0.7, 0, 0.84, 0);
+    /* Animasi & Transisi (TV-Look) */
+    --anim-speed: 0.6s;               
+    --cubic-in: cubic-bezier(0.16, 1, 0.3, 1);  
+    --cubic-out: cubic-bezier(0.7, 0, 0.84, 0); 
     
-    /* Variable Dinamik (Diterima dari Control Panel) */
+    /* Variable Dinamik */
     --global-font-size: 24px; 
     
     /* Warna Custom Slot 1 */
@@ -41,7 +42,7 @@
     --alt-4-info-color: #ffeb3b;
 }
 
-/* 2. TETAPAN ASAS BODY */
+/* 2. TETAPAN ASAS */
 body {
     margin: 0;
     padding: 0;
@@ -59,20 +60,20 @@ body {
     display: flex;
     align-items: center;
     
-    /* Gaya Kotak Modern */
+    /* Gaya Visual Premium */
     background: var(--bg-box);
-    padding: 12px 25px;
-    border-radius: 12px;
-    border: 1px solid #333;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    backdrop-filter: blur(8px);
+    padding: 14px 28px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
 
     /* Status Asal (Tersembunyi) */
     visibility: hidden;
     opacity: 0;
-    transform: translateX(-50px);
+    transform: translateX(-60px);
     
-    /* Logik Transisi Baru */
+    /* Logik Transisi */
     transition: 
         transform var(--anim-speed) var(--cubic-in), 
         opacity var(--anim-speed) ease-out,
@@ -82,25 +83,22 @@ body {
 
 /* 4. SISTEM ANIMASI (IN/OUT) */
 
-/* Animasi Masuk: Slide ke kedudukan asal + Fade in */
 .animation-in {
     visibility: visible !important;
     opacity: 1 !important;
     transform: translateX(0) !important;
 }
 
-/* Animasi Keluar: Meluncur keluar ke kiri + Fade out */
 .animation-out {
     visibility: hidden;
     opacity: 0;
-    transform: translateX(-40px);
+    transform: translateX(-50px);
     transition: 
         transform var(--anim-speed) var(--cubic-out), 
         opacity var(--anim-speed) ease-in,
         visibility var(--anim-speed);
 }
 
-/* Menggantikan display:none supaya transisi tidak terputus */
 .hide-anim {
     visibility: hidden;
     opacity: 0;
@@ -110,15 +108,15 @@ body {
 .logo {
     display: flex;
     align-items: center;
-    margin-right: 18px;
-    padding-right: 18px;
+    margin-right: 20px;
+    padding-right: 20px;
     border-right: 3px solid var(--accent-line);
 }
 
 .logo img {
     height: 55px;
     width: auto;
-    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
 }
 
 .no-logo {
@@ -133,51 +131,71 @@ body {
 }
 
 [id*="-name"] {
-    color: var(--text-white);
     font-size: var(--global-font-size);
     font-weight: 500;
     margin: 0;
     padding: 0;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     line-height: 1.1;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
 }
 
 [id*="-info"] {
-    color: var(--text-yellow);
-    font-size: calc(var(--global-font-size) * 0.7);
+    font-size: calc(var(--global-font-size) * 0.75);
     font-weight: 400;
     margin-top: 4px;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.3px;
+    opacity: 0.9;
 }
 
 /* 7. PENGURUSAN WARNA SLOT (OVERRIDE) */
-#alt-1-name { color: var(--alt-1-name-color); }
-#alt-1-info { color: var(--alt-1-info-color); }
 
-#alt-2-name { color: var(--alt-2-name-color); }
-#alt-2-info { color: var(--alt-2-info-color); }
+/* Slot 1 */
+#alt-1-name { 
+    color: var(--alt-1-name-color); 
+}
+#alt-1-info { 
+    color: var(--alt-1-info-color); 
+}
 
-#alt-3-name { color: var(--alt-3-name-color); }
-#alt-3-info { color: var(--alt-3-info-color); }
+/* Slot 2 */
+#alt-2-name { 
+    color: var(--alt-2-name-color); 
+}
+#alt-2-info { 
+    color: var(--alt-2-info-color); 
+}
 
-#alt-4-name { color: var(--alt-4-name-color); }
-#alt-4-info { color: var(--alt-4-info-color); }
+/* Slot 3 */
+#alt-3-name { 
+    color: var(--alt-3-name-color); 
+}
+#alt-3-info { 
+    color: var(--alt-3-info-color); 
+}
+
+/* Slot 4 */
+#alt-4-name { 
+    color: var(--alt-4-name-color); 
+}
+#alt-4-info { 
+    color: var(--alt-4-info-color); 
+}
 
 /* 8. SOKONGAN LAYOUT KANAN (RIGHT ALIGN) */
 .alt.right {
     left: auto;
     right: 5%;
     flex-direction: row-reverse;
-    transform: translateX(50px); /* Masuk dari kanan */
+    transform: translateX(60px);
 }
 
 .alt.right .logo {
     margin-right: 0;
-    margin-left: 18px;
+    margin-left: 20px;
     padding-right: 0;
-    padding-left: 18px;
+    padding-left: 20px;
     border-right: none;
     border-left: 3px solid var(--accent-line);
 }
@@ -187,5 +205,7 @@ body {
 }
 
 .alt.right.animation-out {
-    transform: translateX(40px); /* Meluncur keluar ke kanan */
+    transform: translateX(50px) !important;
 }
+
+/* Akhir Fail */
