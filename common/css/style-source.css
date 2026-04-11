@@ -1,5 +1,5 @@
 /* style-source.css - Gaya Modern Rounded Pro (Google Sans Edition) - TV Look Version */
-/* Full Expanded Version */
+/* Full Expanded Version with Slide, Fade, and Fly Transitions */
 
 /* 1. IMPORT GOOGLE SANS */
 @font-face {
@@ -19,6 +19,7 @@
     
     /* Animasi & Transisi (TV-Look) */
     --anim-speed: 0.6s;               
+    --cubic-bezier: cubic-bezier(0.16, 1, 0.3, 1); /* Digunakan untuk animasi smooth */
     --cubic-in: cubic-bezier(0.16, 1, 0.3, 1);  
     --cubic-out: cubic-bezier(0.7, 0, 0.84, 0); 
     
@@ -71,38 +72,68 @@ body {
     /* Status Asal (Tersembunyi) */
     visibility: hidden;
     opacity: 0;
-    transform: translateX(-60px);
     
-    /* Logik Transisi */
-    transition: 
-        transform var(--anim-speed) var(--cubic-in), 
-        opacity var(--anim-speed) ease-out,
-        visibility var(--anim-speed);
+    /* Logik Transisi Default */
+    transition: all var(--anim-speed) var(--cubic-bezier);
     will-change: transform, opacity;
 }
 
-/* 4. SISTEM ANIMASI (IN/OUT) */
+/* 4. SISTEM ANIMASI (3 JENIS TRANSITION) */
 
+/* Keadaan Umum Apabila Animasi Masuk (In) */
 .animation-in {
     visibility: visible !important;
     opacity: 1 !important;
-    transform: translateX(0) !important;
 }
 
+/* Keadaan Umum Apabila Animasi Keluar (Out) */
 .animation-out {
     visibility: hidden;
     opacity: 0;
-    transform: translateX(-50px);
-    transition: 
-        transform var(--anim-speed) var(--cubic-out), 
-        opacity var(--anim-speed) ease-in,
-        visibility var(--anim-speed);
 }
 
-.hide-anim {
-    visibility: hidden;
-    opacity: 0;
+/* --- (1) SLIDE IN/OUT (Default) --- */
+.type-slide {
+    transform: translateX(-60px); /* Posisi asal sebelum masuk */
 }
+.type-slide.animation-in {
+    transform: translateX(0) !important;
+}
+.type-slide.animation-out {
+    transform: translateX(-50px);
+    transition: all var(--anim-speed) var(--cubic-out);
+}
+
+/* --- (2) FADE IN/OUT --- */
+.type-fade {
+    transform: translateX(0); /* Kekal di posisi */
+}
+.type-fade.animation-in {
+    transform: translateX(0) !important;
+}
+.type-fade.animation-out {
+    transform: translateX(0); /* Kekal posisi, cuma pudar */
+    transition: opacity var(--anim-speed) ease-in;
+}
+
+/* --- (3) FLY IN/OUT (Zoom & Slide) --- */
+.type-fly {
+    transform: scale(0.5) translateY(50px); /* Kecil dan di bawah */
+}
+.type-fly.animation-in {
+    transform: scale(1) translateY(0) !important;
+}
+.type-fly.animation-out {
+    transform: scale(0.5) translateY(50px);
+    transition: all var(--anim-speed) var(--cubic-out);
+}
+
+/* Kelas penyembunyi mutlak */
+.hide-anim {
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
 
 /* 5. BAHAGIAN LOGO */
 .logo {
@@ -188,7 +219,6 @@ body {
     left: auto;
     right: 5%;
     flex-direction: row-reverse;
-    transform: translateX(60px);
 }
 
 .alt.right .logo {
@@ -200,12 +230,21 @@ body {
     border-left: 3px solid var(--accent-line);
 }
 
-.alt.right.animation-in {
+/* Overrides Animasi untuk Layout Kanan (Supaya arah pergerakan betul) */
+.alt.right.type-slide {
+    transform: translateX(60px); /* Masuk dari kanan */
+}
+
+.alt.right.type-slide.animation-in {
     transform: translateX(0) !important;
 }
 
-.alt.right.animation-out {
+.alt.right.type-slide.animation-out {
     transform: translateX(50px) !important;
+}
+
+.alt.right.type-fly.animation-out {
+    transform: scale(0.5) translateY(50px) !important;
 }
 
 /* Akhir Fail */
