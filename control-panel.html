@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>LT Control Panel - Pro Edition (Updated)</title>
+    <title>LT Control Panel - Pro Edition (v2.1 Fix)</title>
     <link rel="stylesheet" href="common/css/style-control_panel.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body { padding: 10px; background: #1a1a1a; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { padding: 10px; background: #1a1a1a; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; }
         
         /* Main Settings Style */
         #main-settings {
@@ -31,17 +31,17 @@
         .input-row input[type="text"], select {
             flex: 1; padding: 6px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; font-size: 11px;
         }
-        select { cursor: pointer; }
+        select { cursor: pointer; background: #111; color: white; }
 
         /* Logo Slot Styles */
         .logo-upload-container { display: flex; gap: 8px; margin-top: 8px; }
         .logo-upload-slot {
             width: 45px; height: 45px; background: #222; border: 1px dashed #555;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; border-radius: 4px; overflow: hidden;
+            cursor: pointer; border-radius: 4px; overflow: hidden; position: relative;
         }
         .logo-upload-slot img { width: 100%; height: 100%; object-fit: contain; }
-        .mini-preview { width: 24px; height: 24px; background: #222; border: 1px solid #444; margin-right: 5px; display: flex; align-items: center; justify-content: center; border-radius: 3px; }
+        .mini-preview { width: 24px; height: 24px; background: #222; border: 1px solid #444; margin-right: 5px; display: flex; align-items: center; justify-content: center; border-radius: 3px; overflow: hidden; }
         .mini-preview img { width: 90%; height: 90%; object-fit: contain; }
 
         /* Button & Switch Styles */
@@ -67,16 +67,17 @@
         input:checked + .slider { background-color: #4CAF50; }
         input:checked + .slider:before { transform: translateX(16px); }
 
-        /* Style Baru untuk Font Settings */
-        .custom-font-row {
-            display: flex; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;
-        }
+        /* Custom Font Row */
+        .custom-font-row { display: flex; gap: 15px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; }
         .font-input-group { flex: 1; }
         .size-input-group { width: 80px; }
         .custom-font-row label { font-size: 9px; color: #888; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .custom-font-row input[type="number"], .grid-input input {
+        .grid-input input, .custom-font-row input[type="number"] {
             width: 100%; background: #000; color: #fff; border: 1px solid #444; padding: 5px; border-radius: 3px; font-size: 11px;
         }
+
+        /* Responsive Label */
+        .status-msg { font-size: 9px; margin-top: 4px; transition: 0.3s; }
     </style>
 </head>
 <body>
@@ -100,8 +101,8 @@
             <div id="customs-panel" style="display:none; background:#1a1a1a; padding:15px; border-radius:4px; margin-top:10px; border:1px solid #333;">
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <label style="font-size:9px; color:#888;">DEFAULT LOGO (PNG)</label>
-                    <button onclick="resetSystem()" style="background:#f44336; color:white; border:none; padding:4px 8px; border-radius:3px; font-size:9px; cursor:pointer; font-weight: bold;">RESET ALL DATA</button>
+                    <label style="font-size:9px; color:#888;">GLOBAL LOGO (PNG/JPG)</label>
+                    <button onclick="resetSystem()" style="background:#f44336; color:white; border:none; padding:5px 10px; border-radius:3px; font-size:9px; cursor:pointer; font-weight: bold;">RESET ALL DATA</button>
                 </div>
 
                 <div class="logo-upload-container">
@@ -115,17 +116,18 @@
                 <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                    <!-- Jenis Transition -->
+                    <!-- Jenis Transition (Update: Slide-Thru added) -->
                     <div>
                         <label style="font-size:9px; color:#888;">TRANSITION TYPE</label>
                         <select id="transition-type" onchange="function_send()">
                             <option value="slide">1. Slide In/Out</option>
-                            <option value="fade">2. Fade In/Out</option>
-                            <option value="fly">3. Fly (Zoom & Slide)</option>
+                            <option value="slide-thru">2. Slide-Thru (L to R)</option>
+                            <option value="fade">3. Fade In/Out</option>
+                            <option value="fly">4. Fly (Zoom & Slide)</option>
                         </select>
                     </div>
 
-                    <!-- Kelajuan Transition (Global Anim Speed) -->
+                    <!-- Kelajuan Transition -->
                     <div class="grid-input">
                         <label style="font-size:9px; color:#888;">SPEED (SECONDS)</label>
                         <input type="number" id="global-anim-speed" value="0.6" step="0.1" min="0.1" max="3" oninput="function_send()">
@@ -133,14 +135,12 @@
                 </div>
 
                 <div class="custom-font-row">
-                    <!-- Muat Naik Font -->
                     <div class="font-input-group">
-                        <label>Upload Font (.ttf, .otf)</label>
+                        <label>Custom Font (.ttf, .otf)</label>
                         <input type="file" id="font-file" accept=".ttf,.otf,.woff,.woff2" style="font-size:10px; color: #ccc;" onchange="uploadFont(this)">
-                        <div id="font-status" style="font-size:9px; color:#4CAF50; margin-top:4px;">No custom font loaded.</div>
+                        <div id="font-status" class="status-msg" style="color:#4CAF50;">No custom font loaded.</div>
                     </div>
 
-                    <!-- Saiz Font Global -->
                     <div class="size-input-group">
                         <label>Global Size</label>
                         <input type="number" id="global-font-size" value="24" min="10" max="100" oninput="function_send()">
@@ -157,18 +157,16 @@
                                 <input type="checkbox" id="global-loop-switch" onchange="function_send()">
                                 <span class="slider round"></span>
                             </label>
-                            <span style="font-size:10px; color:#4CAF50;">AKTIFKAN LOOP</span>
+                            <span style="font-size:10px; color:#4CAF50;">LOOP AKTIF</span>
                         </div>
                     </div>
-                    
                     <div style="width: 70px;">
-                        <label style="font-size:9px; color:#888;">AKTIF (s)</label>
-                        <input type="number" id="loop-active-time" value="5" min="1" style="width:100%; background:#000; color:#fff; border:1px solid #444; padding:4px; border-radius:3px;" oninput="function_send()">
+                        <label style="font-size:9px; color:#888;">DURASI (s)</label>
+                        <input type="number" id="loop-active-time" value="5" min="1" oninput="function_send()">
                     </div>
-
                     <div style="width: 70px;">
                         <label style="font-size:9px; color:#888;">REHAT (s)</label>
-                        <input type="number" id="loop-idle-time" value="3" min="1" style="width:100%; background:#000; color:#fff; border:1px solid #444; padding:4px; border-radius:3px;" oninput="function_send()">
+                        <input type="number" id="loop-idle-time" value="3" min="1" oninput="function_send()">
                     </div>
                 </div>
             </div>
@@ -184,7 +182,7 @@
             <div class="header-row">
                 <div style="display: flex; align-items: center;">
                     <button class="btn-tool btn-plus" style="margin-right:8px;">+</button>
-                    <span style="color:#2196F3">LOWER THIRD SECTION_ID</span>
+                    <span style="color:#2196F3">SECTION SECTION_ID</span>
                 </div>
                 <label class="switch">
                     <input type="checkbox" id="lower-thirds-switchSECTION_ID" class="lt-switch">
@@ -215,7 +213,7 @@
     <script>
         const bc = new BroadcastChannel('obs-lower-thirds-channel');
 
-        // 1. Bina UI Automatik
+        // 1. Bina UI Automatik (4 Sections)
         const container = $('#lt-sections-container');
         const template = $('#lt-section-template').html();
 
@@ -228,16 +226,38 @@
             }
         }
 
-        // 2. FUNGSI RESET SYSTEM
+        // 2. FUNGSI RESET SYSTEM (Fix: Clear LocalStorage & Notify OBS)
         function resetSystem() {
-            if(confirm("Padam semua data logo, teks dan memori?")) {
+            if(confirm("Semua data teks, logo dan memori akan dipadamkan. Teruskan?")) {
                 localStorage.clear();
-                bc.postMessage({ action: 'reset' });
+                bc.postMessage({ action: 'reset' }); // Hantar signal reset ke overlay
                 location.reload();
             }
         }
 
-        // 3. FUNGSI MUAT NAIK FONT
+        // 3. FUNGSI MUAT NAIK LOGO (Fix: Base64 & LocalStorage)
+        function uploadLogo(input) {
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Data = e.target.result;
+                    localStorage.setItem('global_logo_data', base64Data);
+                    $(`#preview-global`).attr('src', base64Data).show();
+                    $(`#label-global`).hide();
+                    updateMiniPreviews();
+                    function_send();
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function updateMiniPreviews() {
+            let logo = localStorage.getItem('global_logo_data');
+            if(logo) $('.mini-logo-img').attr('src', logo);
+            else $('.mini-logo-img').attr('src', '');
+        }
+
+        // 4. FUNGSI MUAT NAIK FONT
         function uploadFont(input) {
             if (input.files && input.files[0]) {
                 let reader = new FileReader();
@@ -253,36 +273,20 @@
             }
         }
 
-        // 4. LOGIK MUAT NAIK LOGO (Dibaiki)
-        function uploadLogo(input) {
-            if (input.files && input.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    localStorage.removeItem('global_logo_data'); // Bersihkan lama
-                    localStorage.setItem('global_logo_data', e.target.result);
-                    $(`#preview-global`).attr('src', e.target.result).show();
-                    $(`#label-global`).hide();
-                    updateMiniPreviews();
-                    function_send();
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function updateMiniPreviews() {
-            let logo = localStorage.getItem('global_logo_data');
-            if(logo) $('.mini-logo-img').attr('src', logo);
-            else $('.mini-logo-img').attr('src', '');
-        }
-
-        // 5. COLLAPSE/EXPAND (+)
+        // 5. LOGIK UI (Collapse & Uppercase)
         $(document).on('click', '.btn-plus', function() {
             let body = $(this).closest('.sortees').find('.section-body');
             body.slideToggle(200);
             $(this).text($(this).text() === '+' ? '-' : '+');
         });
 
-        // 6. FUNGSI UTAMA HANTAR DATA
+        $('.btn-upper').click(function() {
+            let inp = $(this).siblings('input[type="text"]');
+            inp.val(inp.val().toUpperCase());
+            function_send();
+        });
+
+        // 6. FUNGSI UTAMA HANTAR DATA KE OBS
         function function_send() {
             let data = {};
             let master = $('#lower-thirds-masterswitch').is(':checked');
@@ -319,18 +323,19 @@
             checkSwitchesVisual();
         }
 
+        // 7. INDICATOR WARNA PADA SIDEBAR
         function checkSwitchesVisual() {
             let masterOn = $('#lower-thirds-masterswitch').is(':checked');
             for (let i = 1; i <= 4; i++) {
                 let sw = $(`#lower-thirds-switch${i}`).is(':checked');
                 let config = $(`#alt-${i}-config-content`);
-                if (masterOn && sw) config.css('border-left', '5px solid #4CAF50');
-                else if (sw) config.css('border-left', '5px solid #FF9800');
-                else config.css('border-left', '1px solid #333');
+                if (masterOn && sw) config.css('border-left', '5px solid #4CAF50'); // Hijau (Aktif)
+                else if (sw) config.css('border-left', '5px solid #FF9800'); // Oren (Master Off)
+                else config.css('border-left', '1px solid #333'); // Default
             }
         }
 
-        // 7. MEMORY LOGIC
+        // 8. LOGIK MEMORI (Save & Load)
         $(document).on('mousedown', '[id*=-slot-]', function() {
             let slotId = $(this).attr('id');
             let altNum = slotId.split('-')[1];
@@ -340,7 +345,8 @@
                 localStorage.setItem(slotId + '_info', $(`#alt-${altNum}-info`).val());
                 $(this).addClass('stored');
                 this.isLongPress = true;
-            }, 1000);
+                console.log("Saved to " + slotId);
+            }, 800);
         }).on('mouseup mouseleave', '[id*=-slot-]', function() {
             clearTimeout(this.timer);
         }).on('click', '[id*=-slot-]', function() {
@@ -358,13 +364,13 @@
             }
         });
 
-        // 8. PERSISTENCE
+        // 9. PENYIMPANAN DATA (Persistence)
         function savePanelSettings() {
             $('input, select').each(function() {
                 let id = $(this).attr('id');
                 if(id && !['font-file', 'file-global'].includes(id)) { 
                     let val = $(this).attr('type') === 'checkbox' ? $(this).is(':checked') : $(this).val();
-                    localStorage.setItem("p_" + id, val);
+                    localStorage.setItem("panel_" + id, val);
                 }
             });
         }
@@ -372,13 +378,14 @@
         function loadPanelSettings() {
             $('input, select').each(function() {
                 let id = $(this).attr('id');
-                let saved = localStorage.getItem("p_" + id);
+                let saved = localStorage.getItem("panel_" + id);
                 if (saved !== null) {
                     if ($(this).attr('type') === 'checkbox') $(this).prop('checked', saved === 'true');
                     else $(this).val(saved);
                 }
             });
             
+            // Muat semula logo global
             let savedLogo = localStorage.getItem('global_logo_data');
             if(savedLogo) {
                 $(`#preview-global`).attr('src', savedLogo).show();
@@ -386,9 +393,11 @@
                 updateMiniPreviews();
             }
 
+            // Muat semula nama font
             let savedFontName = localStorage.getItem('custom_font_name');
             if(savedFontName) $('#font-status').text('Font: ' + savedFontName + ' (Loaded)');
 
+            // Tanda slot memori yang ada data
             $('[id*=-slot-]').each(function() {
                 if (localStorage.getItem($(this).attr('id') + '_name')) $(this).addClass('stored');
             });
@@ -399,11 +408,6 @@
         $(document).ready(function() {
             loadPanelSettings();
             $(document).on('change input', 'input, select', function() { function_send(); });
-            $('.btn-upper').click(function() {
-                let inp = $(this).siblings('input[type="text"]');
-                inp.val(inp.val().toUpperCase());
-                function_send();
-            });
         });
     </script>
 </body>
